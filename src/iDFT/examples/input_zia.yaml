@@ -1,0 +1,66 @@
+# input.yaml
+procedure: iDFT
+
+species:
+# Test different lengths and sequences
+  - sequence: "AAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAA"    
+    density: 0.01  # Density of polymer will be varied later on
+
+geometry:
+  coordinate_system: Cartesian
+  dimensions: [30.0]
+  bin_width: [0.01]    # Bin width should be fine for system
+
+  external_field:
+    hard_walls:
+      dims: [1]
+    
+    charged_walls:
+      dims: [1]
+      charge: [-0.0, -0.0]  # Ignore for now
+
+    sw_walls:
+      dims: [1]
+      monomers:
+        A:
+          energy: [[-3.0, -3.0]]  # Surface attraction (energy < 0)
+          lambda: [[1.6, 1.6]]
+
+monomers:
+  A:
+    diameter: 1.0
+    valence: 0.0
+
+  B:
+    diameter: 1.0
+    valence: 0.0
+
+pairs:
+# Square well attraction parameters can be left at zero for now
+  square_well:
+    A, A:
+      energy: 0.0
+
+    A, B:
+      energy: 0.0
+
+    B, B:
+      energy: 0.0
+    
+system:
+  temperature: 298.15
+  dielectric_constant: 78.4
+
+# damping: 0.1
+# mixing_max: 0.05
+# These worked at current parameters,
+# but if you run into issues, change the
+# mixing_max to 0.01 -> 0.005 -> 0.001
+numerical:
+  damping: 0.1
+  mixing_max: 0.05
+  tole: 1e-8
+
+model:
+  - ideal
+  - TPT1mfmt
