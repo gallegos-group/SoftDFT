@@ -1,0 +1,5 @@
+include("freely_jointed/eval_spatial_density.jl")
+include("freely_jointed/child_propagators.jl")
+include("freely_jointed/parent_propagators.jl")
+include("freely_jointed/handle_fixed.jl")
+include("freely_jointed/accumulate_densities.jl")

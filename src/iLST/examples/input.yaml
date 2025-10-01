@@ -1,0 +1,106 @@
+# input.yaml
+procedure: iLST
+
+species:
+  - sequence: "E"
+    concentration: 4.0
+
+  # - sequence: "A"
+    # density: 0.001
+
+  - sequence: "c"
+    concentration: 4.0
+    adjustable: true
+
+  # - sequence: "a"
+  #   concentration: 0.5
+  #   adjustable: true
+
+  # - sequence: "Y"
+    # pSpecies: 7.0
+
+  # - sequence: "Z"
+  
+# reactions:
+#   - species: ["A", "Y", "B"]
+#     coeffs: [-1, +1, +1]
+#     pK: 9.99
+
+#   - species: ["B", "Y", "C"]
+#     coeffs: [-1, +1, +1]
+#     pK: 2.36
+
+#   - species: ["Y", "Z"]
+#     coeffs: [+1, +1]
+#     pK: 14.0
+
+monomers:
+  E:
+    diameter: 1.11
+    valence: -1.0
+
+  c:
+    diameter: 0.64
+    valence: +1.0
+
+  # A:
+  #   diameter: 1.08
+  #   valence: +1.0
+
+  # B:
+  #   diameter: 0.98
+  #   valence: 0.0
+
+  # C:
+  #   diameter: 1.15
+  #   valence: -1.0
+
+  # c:
+  #   diameter: 1.0
+  #   valence: +1.0
+    
+  # a:
+  #   diameter: 1.0
+  #   valence: -1.0
+
+  # Y:
+  #   diameter: 1.0
+  #   valence: +1.0
+    
+  # Z:
+  #   diameter: 1.0
+  #   valence: -1.0
+
+pairs:
+  square_well:
+    E, E:
+      energy: 0.12
+      lambda: 1.397273605563621
+    E, c:
+      energy: 0.65
+      lambda: 1.397273605563621
+    # A, A:
+    #   energy: 0.47
+    # A, B:
+    #   energy: 0.47
+    # A, C:
+    #   energy: 0.47
+    # B, B:
+    #   energy: 0.47
+    # B, C:
+    #   energy: 0.47
+    # C, C:
+    #   energy: 0.47
+    
+system:
+  temperature: 298.15
+  dielectric_constant: 78.4
+  
+model:
+  - ideal
+  # - mfmt
+  # - msa
+  - coul
+  - sw
+  - TPT1mfmt
+  - TPT1msa

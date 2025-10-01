@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use SoftDFT in your research, please cite it as below."
+authors:
+  - name: Alejandro Gallegos
+    affiliation: "Department of Chemical & Materials Engineering, New Mexico State University"
+title: "SoftDFT: A Julia-based platform for modeling soft matter with Ising density functional theory"
+version: "0.1.0"
+date-released: 2025-09-24
+url: "https://github.com/gallegos-group/SoftDFT"
+license: "MIT"

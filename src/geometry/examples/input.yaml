@@ -1,0 +1,13 @@
+geometry:
+  coordinate_system: Cartesian
+  dimensions: [0.0]
+  bin_width: [0.01]
+
+  external_field:
+    hard_walls:
+      dims: [1]
+      
+    
+    charged_walls:
+      dims: [1]
+      charge: [-0.0, 0.0]

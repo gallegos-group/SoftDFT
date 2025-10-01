@@ -1,0 +1,88 @@
+# input.yaml
+# include("src/molecular_system/molecular_system.jl"); 
+# molsys = molecular_system("src/molsys/examples/input.yaml");
+species:
+  - sequence: "AAA"
+    density: 0.01
+
+  - sequence: "CCC"
+    density: 0.01
+
+  - sequence: "c"
+    density: 0.001
+    adjustable: true
+
+  - sequence: "a"
+    density: 0.001
+    adjustable: true
+
+  - sequence: "Y" # proton
+    pSpecies: 7.0
+
+  - sequence: "Z" # hydroxyl ion
+  
+reactions:
+  - species: ["A", "Y", "B"]
+    coeffs: [-1, +1, +1]
+    pK: 4.0
+
+  - species: ["C", "Y", "D"]
+    coeffs: [-1, +1, +1]
+    pK: 10.0
+
+  - species: ["Y", "Z"]
+    coeffs: [+1, +1]
+    pK: 14.0
+
+monomers:
+  A:
+    diameter: 1.0
+    valence: 0.0
+
+  B:
+    diameter: 1.0
+    valence: -1.0
+
+  c:
+    diameter: 1.0
+    valence: +1.0
+    
+  a:
+    diameter: 1.0
+    valence: -1.0
+
+  C:
+    diameter: 1.0
+    valence: +1.0
+
+  D:
+    diameter: 1.0
+    valence: 0.0
+
+  Y:
+    diameter: 1.0
+    valence: +1.0
+    
+  Z:
+    diameter: 1.0
+    valence: -1.0
+
+pairs:
+  square_well:
+    A, A:
+      energy: -1.0
+
+    A, B:
+      energy: 1.0
+    
+system:
+  temperature: 298.15
+  dielectric_constant: 78.4
+
+model:
+  - ideal
+  # - mfmt # excluded volume
+  # - msa # electrostatic correlations
+  # - TPT1mfmt # polymer excluded volume
+  # - TPT1msa  # polymer elec. corr.
+  - coul # Galvanic/Donnan potential
