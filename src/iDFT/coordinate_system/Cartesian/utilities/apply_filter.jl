@@ -13,8 +13,7 @@ Returns:
 - The filtered `f_hat` array (modified in place).
 """
 function apply_filter!(f_hat, geometry; frac_cut=0.5, p=4)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
 
     NP_star = compute_full_domain(NP, mirrored, offset)
 

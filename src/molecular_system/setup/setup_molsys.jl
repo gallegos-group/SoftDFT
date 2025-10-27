@@ -58,9 +58,9 @@ function setup_molsys(dataset::Dict)
 
     bond_types = process_bonds(configurations)
 
-    properties = PropertiesStruct(  Dict{Symbol, Any}(),
+    properties = PropertiesStruct(  Dict{Symbol, Float64}(),
                                     Dict{Symbol, Any}(),
-                                    symbolize_keys(species_dict),
+                                    SpeciesProperties(symbolize_keys(species_dict)),
                                     symbolize_keys(system_properties),
                                     reaction_entries,
                                     bond_types,

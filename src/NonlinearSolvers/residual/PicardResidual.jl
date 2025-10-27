@@ -1,5 +1,3 @@
-struct PicardResidual <: AbstractResidualSolver end
-
 """
     solver_function(
         solver_type::PicardResidual,

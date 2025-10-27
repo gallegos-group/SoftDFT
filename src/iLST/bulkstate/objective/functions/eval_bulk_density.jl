@@ -1,3 +1,4 @@
+
 """
     eval_bulk_density(molsys, bulk) -> (rho1_beads, rho1_bonds)
 
@@ -22,6 +23,8 @@ function eval_bulk_density!(
         eval_bulk_density!(u, molsys, bulk, species_model)
     end
 end
+
+include("../../../species_model/analyticalEval.jl")
 
 """
     eval_bulk_density(::Int, ...) for unimplemented species model

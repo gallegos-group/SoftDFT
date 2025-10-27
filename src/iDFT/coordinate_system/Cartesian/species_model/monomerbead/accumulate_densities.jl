@@ -18,7 +18,7 @@ function accumulate_densities(
     @unpack diameters, delta_muH = bulk_system.molsys.properties.monomers
 
     # Geometry
-    @unpack bin_width, NP, features = geometry
+    @unpack bin_width, NP = geometry
 
     # Topology
     @unpack state_family, topology = config_u
@@ -31,15 +31,10 @@ function accumulate_densities(
     for parent in eachindex(state_family)
         for (idx_i, state_i) in enumerate(state_family[parent])
             for K in CartesianIndices(NP)
-                contr1 = norm*exp(mu_species_u - mu_ex_K[K, state_i]  
+                contr = norm*exp(mu_species_u - mu_ex_K[K, state_i]  
                                     - Ext[K, state_i] - delta_muH[state_i])
-
-                contr = contr1
-                if fixed_segments[parent]
-                    contr /= prod(bin_width)*trapez[K, state_i]
-                end
     
-                species_segments_K[K, idx_i, parent] += contr*temp
+                species_segments_K[K, idx_i, parent] += contr
             end
         end
     end

@@ -18,8 +18,7 @@ Constructs a `TPT1mfmtFunctional` object for the TPT1-MFMT free energy model.
 - A fully initialized `TPT1mfmtFunctional` object.
 """
 function construct_functional(::Type{TPT1mfmtFunctional}, molsys::MolecularSystem, bulk::BulkState, geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     @unpack diameters = molsys.properties.monomers
 
     # work on the calculation domain
@@ -165,8 +164,7 @@ function compute_pointwise_free_energy(fe_term::TPT1mfmtFunctional,
                                        nai_K::AbstractArray,
                                        wt_bonds_K::AbstractArray,
                                        bulk_system, geometry)
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     @unpack wt_bonds = fe_term.model
     @unpack n0i, n1i, n2i, n3i, nV1, nV2 = fe_term.model

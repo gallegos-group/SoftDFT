@@ -1,9 +1,7 @@
-function determine_fixed(molsys, fields, geometry::CartesianZ)
+function determine_fixed(fixed_position, molsys, fields, geometry::CartesianZ)
 
     @unpack diameters = molsys.properties.monomers
-    @unpack bin_width, features = geometry
-    @unpack offset, dimensions = features
-    @unpack fixed_position = molsys.properties.species
+    @unpack bin_width, offset, dimensions = geometry
 
     idx_LW, idx_RW = compute_wall_indices(dimensions, bin_width)
 
@@ -11,7 +9,7 @@ function determine_fixed(molsys, fields, geometry::CartesianZ)
         config = molsys.configurations[u]
         sequence = config.sequence
         pos_tags = fixed_position[u]
-        coords = fixed_struct.coordinates[1]
+        coords = fixed_struct.coordinates
 
         for (L, isfixed) in enumerate(fixed_struct.segments)
             if isfixed
@@ -28,19 +26,14 @@ function determine_fixed(molsys, fields, geometry::CartesianZ)
             end
         end
     end
-
-    delete!(molsys.properties.species, :fixed_position)
 end
 
-function determine_fixed(molsys, fields, geometry::CartesianXYZ)
+function determine_fixed(fixed_position, molsys, fields, geometry::CartesianXYZ)
 
     @unpack diameters = molsys.properties.monomers
-    @unpack NP, bin_width, features = geometry
-    @unpack offset, dimensions = features
-    @unpack fixed_position = molsys.properties.species
+    @unpack NP, bin_width, offset, dimensions = geometry
 
     idx_LW, idx_RW = compute_wall_indices(dimensions, bin_width)
-    fixed_position = molsys.properties.species[:fixed_position]
 
     z_count = 0
     left_count = 0
@@ -50,7 +43,7 @@ function determine_fixed(molsys, fields, geometry::CartesianXYZ)
         config = molsys.configurations[u]
         sequence = config.sequence
         pos_tags = fixed_position[u]
-        coords = fixed_struct.coordinates[1]
+        coords = fixed_struct.coordinates
 
         if count(fixed_struct.segments) > 1
             error("Only one fixed segment per chain is allowed in 3D (species $u).")
@@ -69,8 +62,8 @@ function determine_fixed(molsys, fields, geometry::CartesianXYZ)
 
                 # Normalize fixed density based on wall area
                 println("Grafting density is currently specified as $(fixed_struct.density[1])")
-                fixed_struct.density[1] /= dimensions[1] * dimensions[2]
-                println("Updated grafting density: $(fixed_struct.density[1])")
+                fixed_struct.density[1] = 1.0 / (dimensions[1] * dimensions[2])
+                println("Updated grafting density: $(fixed_struct.density[1]) based off system dimensions: x = $(dimensions[1]) and y = $(dimensions[2]).")
 
                 if pos_tags[L] == "left"
                     right_count += 1
@@ -90,8 +83,6 @@ function determine_fixed(molsys, fields, geometry::CartesianXYZ)
     if left_count > 1 || right_count > 1
         error("Only one brush may be attached to each wall in 3D.")
     end
-
-    delete!(molsys.properties.species, :fixed_position)
 end
 
 function compute_wall_indices(dimensions, bin_width)

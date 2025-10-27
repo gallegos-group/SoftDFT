@@ -32,16 +32,13 @@ function solver_bulkstate(bulk_system::IsingLST)
 
     molsys = bulk_system.molsys
     bulk   = bulk_system.bulk
+    solution_variables = assign_solution_variables(molsys, bulk)
 
-    # Problem setup
-    problem_data = (molsys, bulk)
+    problem_data = (molsys, bulk, solution_variables)
     objective_function = residual_bulkstate
 
-    # solution_variables = (bulk.rho.species, )
-    solution_variables = assign_solution_variables(molsys, bulk)
-    problem_data = (problem_data..., solution_variables, )
-
     # Merge user-specified and default solver settings
+    # Can be made allocation free
     numerics = merge(
         Dict(
             "mixing_max" => 0.1,

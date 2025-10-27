@@ -15,9 +15,13 @@ function eval_excess_field!(molsys :: MolecularSystem, bulk :: BulkState)
     @. lng         = 0.0
 
     # Accumulate contributions from each model term
-    for model_term in bulk.fe_model
+    # Explicitly unroll for known model count
+    ntuple(length(bulk.fe_model)) do i
+        model_term = bulk.fe_model[i]
         if !is_ideal(model_term)
             chemical_potential!(molsys, bulk, model_term)
         end
     end
+
+    return nothing
 end

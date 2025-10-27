@@ -19,15 +19,16 @@ Notes:
 Modifies:
 - `features[:external_field][:input_external][:position]` → initialized as empty per dimension
 """
-function cartesian_features(features::Dict{Symbol, Any}, ::Val{:input_external})
-    description = features[:external_field][:input_external]
 
+struct ExtInputExt <: AbstractExternalField end
+
+function cartesian_features(features::CartesianFeatures, data_external_field, ::Val{:input_external})
+    description = data_external_field[:input_external]
+    @unpack dimensions, periodic, mirrored = features
     dims = get(description, "dims", nothing)
     isnothing(dims) && error("Error: please specify the dimensions using 'dims: [i, j, ...]'.")
 
-    n_dims   = length(features[:dimensions])
-    periodic = features[:periodic]
-    mirrored = features[:mirrored]
+    n_dims   = length(dimensions)
 
     # Initialize positions array for compatibility (even if unused here)
     description["position"] = [Float64[] for _ in 1:n_dims]
@@ -39,6 +40,8 @@ function cartesian_features(features::Dict{Symbol, Any}, ::Val{:input_external})
         # periodic[dim] = false
         # mirrored[dim] = false
     end
+
+    return ExtInputExt()
 end
 
 """
@@ -46,6 +49,6 @@ end
 
 Stub for `:input_external`. No updates are currently required after mirroring.
 """
-function update_features(features::Dict{Symbol, Any}, ::Val{:input_external})
+function update_features(features::CartesianFeatures, data_external_field, ::Val{:input_external})
     # Nothing to be done
 end

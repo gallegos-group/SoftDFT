@@ -18,8 +18,7 @@ Constructs an `msaFunctional` object using the system’s geometry and model par
 - A fully initialized `msaFunctional` object.
 """
 function construct_functional(::Type{msaFunctional}, molsys::MolecularSystem, bulk::BulkState, geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     @unpack diameters = molsys.properties.monomers
 
     # work on the calculation domain
@@ -72,8 +71,7 @@ end
 function compute_pointwise_free_energy(fe_term::msaFunctional,
                                        wt_rho_K::AbstractArray,
                                        bulk_system, geometry)
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     @unpack wt_rho = fe_term.model
     @unpack diameters, valences = bulk_system.molsys.properties.monomers

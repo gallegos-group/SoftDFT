@@ -32,8 +32,7 @@ function construct_functional(::Type{coulFunctional},
                               molsys::MolecularSystem,
                               bulk::BulkState,
                               geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     @unpack bjerrum_length = molsys.properties.system
 
     # work on the calculation domain
@@ -51,8 +50,7 @@ end
 
 
 function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, fe_term :: coulFunctional)
-    @unpack features = geometry
-    @unpack mirrored, offset = features
+    @unpack mirrored, offset = geometry
 
     @unpack weight_fft_K = fe_term
     @unpack surf_hat, rho_beads_hat, f_hat, mu_ex_hat, plan_backward = fields.fourier

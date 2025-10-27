@@ -26,7 +26,7 @@ densities, free energy model components, and thermodynamic output fields.
 - `struct_model`: Vector of free energy model components used to compute thermodynamic quantities.
 """
 
-struct BulkState
+struct BulkState{FE, EV}
     rho          :: BulkDensities
     mu_species   :: Vector{Float64}
     mu_ex        :: Vector{Float64}
@@ -34,10 +34,10 @@ struct BulkState
     Xi           :: Vector{Float64}
     Pressure     :: Vector{Float64}
     Psi          :: Vector{Float64}
-    fe_model     :: Vector{AbstractFreeEnergy}
-    evaluation   :: Vector{AbstractEvaluation}
+    fe_model     :: FE
+    evaluation   :: EV
 
-    function BulkState(rho::BulkDensities, fe_model::Vector{AbstractFreeEnergy}, evaluation :: Vector{AbstractEvaluation}; Psi = 0.0)
+    function BulkState(rho::BulkDensities, fe_model :: FE, evaluation :: EV; Psi = 0.0) where {FE, EV}
         mu_species = zeros(length(rho.species))
         mu_ex      = zeros(length(rho.beads))
         lng        = zeros(size(rho.bonds, 2))
@@ -48,7 +48,7 @@ struct BulkState
         Psi_vec = isa(Psi, Number) ? [Psi] :
                   (length(Psi) == 1 ? Psi : error("Psi must be a scalar or a length-1 vector."))
     
-        return new(rho, mu_species, mu_ex, lng, Xi, Pressure, Psi_vec, fe_model, evaluation)
+        return new{FE, EV}(rho, mu_species, mu_ex, lng, Xi, Pressure, Psi_vec, fe_model, evaluation)
     end    
 end
 
@@ -58,6 +58,12 @@ function Base.show(io::IO, state::BulkState)
     println(io, "  Beads:    ", length(state.rho.beads))
     println(io, "  Pressure: ", state.Pressure[1])
     println(io, "  Psi:      ", state.Psi[1])
-    println(io, "  FE Models:   ", join([typeof(m).name.wrapper for m in state.fe_model], ", "))
-    println(io, "  Evaluation:   ", join([typeof(m).name.wrapper for m in state.evaluation], ", "))
+
+    fe_types = join([string(k, "=", typeof(v).name.wrapper)
+                     for (k, v) in pairs(state.fe_model)], ", ")
+    println(io, "  FE Models: ", fe_types)
+
+    eval_types = join([string(k, "=", typeof(v).name.wrapper)
+                       for (k, v) in pairs(state.evaluation)], ", ")
+    println(io, "  Evaluation: ", eval_types)
 end

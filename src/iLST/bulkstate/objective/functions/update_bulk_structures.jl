@@ -32,17 +32,12 @@ function update_bulk_structures!(molsys::MolecularSystem, bulk::BulkState, solut
     idx_pH  = 1
 
     for (i, s) in enumerate(species)
-        ρ = nothing
         if !isnan(input_pSpecies[i])
-            ρ = exp(log_rho_pH[idx_pH])
+            rho.species[i] = exp(log_rho_pH[idx_pH])
             idx_pH += 1
         elseif s in species_in_reactions
-            ρ = exp(log_rho_rxn[idx_rxn])
+            rho.species[i] = exp(log_rho_rxn[idx_rxn])
             idx_rxn += 1
-        end
-
-        if ρ !== nothing
-            rho.species[i] = ρ
         end
     end
 end

@@ -19,9 +19,9 @@ fields, updating densities, and computing convolution-based interactions.
 - `fixed::Vector{FixedSpecies}` — Per-configuration data for grafted or fixed segments.
 """
 
-struct SpatialFields
-    rho_K      :: DensityFields
-    excess     :: ExcessFields
-    fourier    :: FourierCache
-    fixed      :: Vector{FixedSpecies}
+struct SpatialFields{D, E, F, FS}
+    rho_K      :: D             # DensityFields
+    excess     :: E             # ExcessFields
+    fourier    :: F             # FourierCache
+    fixed      :: FS            # Vector{FixedSpecies}
 end

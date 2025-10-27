@@ -17,12 +17,11 @@ This structure is used during initialization and evolution of systems where some
 remain spatially constrained or serve as external inputs to the system.
 """
 
-struct FixedSpecies
-    density       :: Vector{Float64}              # Total fixed density per species
-    segments      :: Vector{Bool}                 # Marks which segments are fixed
-    configuration :: Vector{Array{Float64, 2}}    # Spatial density for each fixed segment
-    coordinates   :: Vector{Vector{Tuple}}        # Coordinates for each segment (per config)
-    lambda        :: Vector{Float64}              # Weight or scaling factor for fixed species
+struct FixedSpecies{D}
+    density       :: Vector{Float64}                 # Total fixed density per species
+    segments      :: Vector{Bool}                    # Marks which segments are fixed
+    coordinates   :: Vector{NTuple{D, Int}}          # Coordinates for each segment (per config)
+    lambda        :: Vector{Float64}                 # Weight or scaling factor for fixed species
 end
 
 """
@@ -30,12 +29,11 @@ end
 
 Create a `FixedSpecies` object with all fields initialized for a species with `num_segments` segments.
 """
-function FixedSpecies(num_segments::Int)
+function FixedSpecies(num_segments::Int, ndims :: Int)
     density       = [0.0]
     segments      = fill(false, num_segments)
-    configuration = Vector{Array{Float64, 2}}() # This is a vector when it doesnt need to be anymore
-    coordinates   = [fill((), num_segments)]
+    coordinates   = [ntuple(_ -> 0, ndims) for _ in 1:num_segments]
     lambda        = [1.0]
 
-    return FixedSpecies(density, segments, configuration, coordinates, lambda)
+    return FixedSpecies(density, segments, coordinates, lambda)
 end

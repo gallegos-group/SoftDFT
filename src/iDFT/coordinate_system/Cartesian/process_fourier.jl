@@ -22,10 +22,11 @@ function process_fourier(molsys::MolecularSystem, geometry::CartesianCoord)
     surf_hat  = zeros(ComplexF64, NP_star)
 
     # Monomer fields
-    NB = length(molsys.properties.species[:monomers])
+    NB = length(molsys.properties.species.monomers)
     dims_NB = (NP_star..., NB)
     rho_beads_hat    = zeros(ComplexF64, dims_NB)
     mu_ex_hat  = zeros(ComplexF64, dims_NB)
+    mu_sim_hat = zeros(ComplexF64, dims_NB)
 
     # Bond fields
     MB = length(molsys.properties.bond_types)
@@ -40,7 +41,7 @@ function process_fourier(molsys::MolecularSystem, geometry::CartesianCoord)
 
     return FourierCache{ndims(surf_hat), ndims(mu_ex_hat), ndims(lng_hat),
                         typeof(planF), typeof(planB)}(
-        rho_beads_hat, mu_ex_hat, rho_bonds_hat,
+        rho_beads_hat, mu_ex_hat, mu_sim_hat, rho_bonds_hat,
         weight_bond_hat, lng_hat,
         surf_hat, f_hat,
         planF, planB

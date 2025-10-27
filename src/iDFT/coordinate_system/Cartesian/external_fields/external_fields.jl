@@ -16,16 +16,19 @@ function eval_external_field(molsys, geometry, fields)
     @. trapez = 1.0
     @. surf_hat = 0.0 + 0im
 
-    for (name, _) in geometry.features[:external_field]
-        eval_External(molsys, geometry, fields, Val{Symbol(name)}())
+    for ext_field in geometry.external_field
+        eval_External(molsys, geometry, fields, ext_field)
     end
 
     surf_hat = plan_forward * surf_hat
 end
 
+function eval_External(molsys, geometry, fields, ext_field)
+    error("No method defined for $(typeof(ext_field)).")
+end
 
 function contact_value_theorem(molsys, geometry, fields, unknown)
     # If unknown
     println("contact_value_theorem not specified for $unknown.")
-    return zeros(Float64, size(geometry.NP))
+    return zeros(Float64, length(geometry.NP))
 end

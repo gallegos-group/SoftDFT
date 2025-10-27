@@ -21,8 +21,7 @@ function construct_functional(::Type{TPT1msaFunctional},
                               molsys::MolecularSystem,
                               bulk::BulkState,
                               geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     @unpack diameters = molsys.properties.monomers
     
     # work on the calculation domain
@@ -105,8 +104,7 @@ function compute_pointwise_free_energy(fe_term::TPT1msaFunctional,
                                        wt_rho_K::AbstractArray,
                                        wt_bonds_K::AbstractArray,
                                        bulk_system, geometry)
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     @unpack wt_rho, wt_bonds = fe_term.model
     @unpack bond_types = bulk_system.molsys.properties

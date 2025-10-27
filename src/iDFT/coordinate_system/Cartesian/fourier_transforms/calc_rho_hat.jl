@@ -15,8 +15,7 @@ calculation domain `NP_star`.
 
 
 function calc_rho_beads_hat!(geometry :: CartesianCoord, fields :: SpatialFields)
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     NP_star = compute_full_domain(NP, mirrored, offset)
 
@@ -66,8 +65,7 @@ calculation domain `NP_star`.
 
 function calc_rho_bonds_hat!(bulk_system :: IsingLST, geometry :: CartesianCoord, fields :: SpatialFields)
 
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     NP_star = compute_full_domain(NP, mirrored, offset)
 

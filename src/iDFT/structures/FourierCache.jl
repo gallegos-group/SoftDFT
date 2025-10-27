@@ -32,6 +32,8 @@ struct FourierCache{M, N, O, F<:AbstractFFTs.Plan, B<:AbstractFFTs.Plan}
     rho_beads_hat     :: Array{ComplexF64, N}
     mu_ex_hat         :: Array{ComplexF64, N}
 
+    mu_sim_hat         :: Array{ComplexF64, N}
+
     rho_bonds_hat     :: Array{ComplexF64, O}
     weight_bonds_hat  :: Array{Float64, N}
     lng_hat           :: Array{ComplexF64, O}

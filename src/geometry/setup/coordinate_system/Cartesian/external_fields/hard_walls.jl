@@ -19,12 +19,14 @@ Modifies:
 - `features[:external_field][:hard_walls][:position]` → sets default wall positions
 """
 
-function cartesian_features(features::Dict{Symbol, Any}, ::Val{:hard_walls})
-    dimensions = features[:dimensions]
-    periodic   = features[:periodic]
-    mirrored   = features[:mirrored]
+struct ExtHardWalls <: AbstractExternalField 
+    positions :: Vector{Vector{Float64}}
+end
 
-    description = features[:external_field][:hard_walls]
+function cartesian_features(features::CartesianFeatures, data_external_field, ::Val{:hard_walls})
+   @unpack dimensions, periodic, mirrored = features
+
+    description = data_external_field[:charged_walls]
 
     if !haskey(description, "dims")
         error("Missing 'dims' key in external_field[:hard_walls]. Please specify affected directions.")
@@ -45,6 +47,8 @@ function cartesian_features(features::Dict{Symbol, Any}, ::Val{:hard_walls})
         # Define default wall positions at 0.0 and box edge
         description["position"][dim] = [0.0, dimensions[dim]]
     end
+
+    return ExtHardWalls(description["position"])
 end
 
 """
@@ -52,6 +56,6 @@ end
 
 Stub for `:hard_walls` external field. Currently no updates are needed after mirroring.
 """
-function update_features(features::Dict{Symbol, Any}, ::Val{:hard_walls})
+function update_features(features::CartesianFeatures, data_external_field, ::Val{:hard_walls})
     # Nothing to update
 end

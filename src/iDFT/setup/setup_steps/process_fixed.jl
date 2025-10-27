@@ -2,7 +2,7 @@
 function process_fixed(dataset, molsys, fields, geometry)
     species_data = dataset["species"]
     species_properties = molsys.properties.species
-    species_properties[:fixed_position] = [fill("", length(cfg.sequence)) for cfg in molsys.configurations]
+    fixed_position = [fill("", length(cfg.sequence)) for cfg in molsys.configurations]
     @unpack input_densities = species_properties
     
     for (u, fixed_struct) in enumerate(fields.fixed)
@@ -34,7 +34,7 @@ function process_fixed(dataset, molsys, fields, geometry)
 
                 for (i, L) in enumerate(segment_data)
                     fixed_struct.segments[L] = true
-                    species_properties[:fixed_position][u][L] = position_data[i]
+                    fixed_position[u][L] = position_data[i]
                 end
             else
                 error("Species $u contains 'fixed' but is missing 'segment' or 'position'.")
@@ -42,5 +42,5 @@ function process_fixed(dataset, molsys, fields, geometry)
         end
     end
 
-    determine_fixed(molsys, fields, geometry)
+    determine_fixed(fixed_position, molsys, fields, geometry)
 end

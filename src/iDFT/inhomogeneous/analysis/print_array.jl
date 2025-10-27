@@ -41,9 +41,9 @@ function write_segment_array(rho_segments::Vector{<:AbstractArray{Float64}},
     @assert length(rho_segments) == length(molsys.configurations)
 
     nd_spatial   = length(NP)
-    monomer_names = molsys.properties.species[:monomers]
+    monomer_names = molsys.properties.species.monomers
     configs       = molsys.configurations
-    species_names = molsys.properties.species[:species]
+    species_names = molsys.properties.species.species
 
     for (i, (rho, config)) in enumerate(zip(rho_segments, configs))
         @assert size(rho)[1:nd_spatial] == NP
@@ -95,9 +95,9 @@ function write_state_fraction_profiles(rho_segments::Vector{<:AbstractArray{Floa
     @assert length(rho_segments) == length(molsys.configurations)
 
     nd_spatial     = length(NP)
-    monomer_names  = molsys.properties.species[:monomers]
+    monomer_names  = molsys.properties.species.monomers
     configs        = molsys.configurations
-    config_names   = molsys.properties.species[:species]
+    config_names   = molsys.properties.species.species
 
     for (i, (rho, config)) in enumerate(zip(rho_segments, configs))
         state_family = config.state_family

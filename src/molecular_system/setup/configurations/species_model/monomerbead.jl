@@ -4,8 +4,11 @@
 Represents a standalone, non-polymeric species with no chain connectivity.
 Used for modeling individual molecules without internal bonding.
 """
-struct monomerbead <: AbstractSpecies end
-
+struct monomerbead <: AbstractSpecies 
+    function monomerbead(numbeads)
+        new()
+    end
+end
 
 """
     bonding_constraint(config::ConfigurationStruct, properties::PropertiesStruct, chain_model::monomerbead)

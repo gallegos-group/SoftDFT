@@ -2,7 +2,7 @@ using YAML
 using DelimitedFiles
 using Printf
 
-include("src/iDFT/iDFT.jl")
+include("../src/iDFT/iDFT.jl")
 
 # Helper: consistent folder names like dist_1.60, dist_1.62, ...
 _format_dir(d; digits=2) = "pH_" * @sprintf("%0.*f", digits, d)

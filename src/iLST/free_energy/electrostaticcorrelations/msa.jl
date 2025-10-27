@@ -147,7 +147,7 @@ Here, Γ and η are computed from `Gamma_msa`.
 function compute_msa_deriv!(dΦ, ρ, σ, Z, ℓB)
     Γ, η, _ = Gamma_msa(ρ, σ, Z, ℓB)
 
-    u_star = -π/6 * sum(@~ @. ρ*σ^2 * ((Z - η*σ*σ) / (1.0 + Γ*σ) + Z))
+    u_star = -π/6 * sum(@~ @. ρ* σ * σ * ((Z - η*σ*σ) / (1.0 + Γ*σ) + Z))
 
     @. dΦ = -ℓB * (Γ*Z^2 / (1.0 + Γ*σ)
                     + η*σ * ((2.0*Z-η*σ^2) / (1.0 + Γ*σ) +η*σ^2 / 3.0) 
@@ -182,7 +182,7 @@ function Gamma_msa(ρ, σ, Z, ℓB)
 
     tol = 1e-10
     Γ1 = 0.0
-    κ = sqrt(4.0*π*ℓB * sum(@~ @. ρ * Z^2))
+    κ = sqrt(4.0*π*ℓB * sum(@~ @. ρ * Z * Z))
 
     if κ < tol
         Γ   = κ / 2.0
@@ -200,11 +200,11 @@ function Gamma_msa(ρ, σ, Z, ℓB)
         iter = 0
 
         while true
-            H = sum(@~ @. ρ * σ^3 / (1.0 + Γ * σ)) + term2
+            H = sum(@~ @. ρ * σ * σ * σ / (1.0 + Γ * σ)) + term2
 
             η = sum(@~ @. ρ * Z * σ / (1.0 + Γ * σ)) / H
 
-            Γ1 = sqrt(π * ℓB * sum(@~ @. ρ * (Z - η * σ^2)^2 / (1.0 + Γ * σ)^2))
+            Γ1 = sqrt(π * ℓB * sum(@~ @. ρ * (Z - η * σ * σ) * (Z - η * σ * σ) / (1.0 + Γ * σ) / (1.0 + Γ * σ)))
 
             # Update Γ with damping
             Γ_new = 0.9 * Γ + 0.1 * Γ1

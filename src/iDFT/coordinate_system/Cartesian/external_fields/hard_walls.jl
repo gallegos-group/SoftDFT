@@ -3,15 +3,14 @@
 #     hard_walls:
 #       dims: [1]
 
-function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:hard_walls})
+function eval_External(molsys, geometry::CartesianCoord, fields, ext_field :: ExtHardWalls)
     @unpack Ext, trapez = fields.excess
-    @unpack NP, bin_width, features = geometry
+    @unpack NP, bin_width, offset, mirrored = geometry
     @unpack diameters = molsys.properties.monomers
-    @unpack offset, mirrored = features
 
     Rsys = CartesianIndices(NP)
 
-    walls = features[:external_field][:hard_walls]["position"]
+    walls = ext_field.positions
 
     for K in Rsys
         idx = Tuple(K)
@@ -47,14 +46,13 @@ function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:hard_wal
 end
 
 
-function contact_value_theorem(molsys, geometry::CartesianCoord, fields, ::Val{:hard_walls})
+function contact_value_theorem(molsys, geometry::CartesianCoord, fields, ext_field :: ExtHardWalls)
 
     @unpack Ext, trapez = fields.excess
-    @unpack NP, bin_width, features = geometry
+    @unpack NP, bin_width, offset, mirrored = geometry
     @unpack diameters = molsys.properties.monomers
-    @unpack offset, mirrored = features
 
-    walls = features[:external_field][:hard_walls]["position"]
+    walls = ext_field.positions
 
     rho_beads_K = fields.rho_K.beads
 

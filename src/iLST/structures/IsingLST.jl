@@ -12,8 +12,8 @@ for weak polyelectrolytes using Ising Density Functional Theory.
 
 include("BulkState.jl")
 
-struct IsingLST #<: Procedure_iLST
-    molsys     :: MolecularSystem               # Molecular system specification
-    bulk       :: BulkState                     # Bulk thermodynamic problem and state
+struct IsingLST{MS, BS} #<: Procedure_iLST
+    molsys     :: MS               # Molecular system specification
+    bulk       :: BS                     # Bulk thermodynamic problem and state
     numerics   :: Dict{String, Float64}         # Input numerical parameters
 end

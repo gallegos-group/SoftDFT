@@ -39,20 +39,48 @@ Overwrite `previous` with a linear blend of `previous` and `current`:
 
 Use `apply_mixing` for scalar or read-only contexts.
 """
-function apply_mixing!(previous::AbstractArray, current::AbstractArray, amix::Float64)
-    @. previous = (1.0 - amix) * previous + amix * current
+@inline function apply_mixing!(previous::AbstractArray,
+                               current::AbstractArray,
+                               amix::Float64)
+    coeff1 = 1.0 - amix
+    coeff2 = amix
+    @inbounds @simd for i in eachindex(previous)
+        previous[i] = coeff1 * previous[i] + coeff2 * current[i]
+    end
+    return previous
 end
 
-function apply_mixing!(previous::Tuple, current::Tuple, amix::Float64)
-    for i in eachindex(previous)
-        if previous[i] isa Number
-            error("Cannot modify tuple field $i (a Number) in-place. Use `apply_mixing` instead.")
-        end
-        apply_mixing!(previous[i], current[i], amix)
+@inline function apply_mixing!(previous::AbstractVector{<:AbstractArray},
+                               current::AbstractVector{<:AbstractArray},
+                               amix::Float64)
+    @inbounds for j in eachindex(previous)
+        apply_mixing!(previous[j], current[j], amix)
     end
+    return previous
+end
+
+
+
+# function apply_mixing!(previous::Tuple, current::Tuple, amix::Float64)
+#     for i in eachindex(previous)
+#         if previous[i] isa Number
+#             error("Cannot modify tuple field $i (a Number) in-place. Use `apply_mixing` instead.")
+#         end
+#         apply_mixing!(previous[i], current[i], amix)
+#     end
+# end
+
+@inline function apply_mixing!(p::Tuple{}, c::Tuple{}, amix::Float64)
+    return p
+end
+
+@inline function apply_mixing!(p::Tuple, c::Tuple, amix::Float64)
+    @inbounds apply_mixing!(p[1], c[1], amix)
+    @inbounds apply_mixing!(Base.tail(p), Base.tail(c), amix)
+    return p
 end
 
 # Optional fallback to catch unsupported types early
-function apply_mixing!(previous, current, amix::Float64)
+@noinline function apply_mixing!(previous, current, amix::Float64)
     error("apply_mixing! not defined for type: $(typeof(previous))")
 end

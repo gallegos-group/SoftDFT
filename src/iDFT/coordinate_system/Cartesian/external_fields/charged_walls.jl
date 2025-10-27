@@ -4,17 +4,16 @@
     #   dims: [1]
     #   charge: [0.0, -0.0]
 
-function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:charged_walls})
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+function eval_External(molsys, geometry::CartesianCoord, fields, ext_field :: ExtChargedWalls)
+    @unpack NP, bin_width, mirrored, offset = geometry
 
     n_dims     = length(NP)
     Rsys = CartesianIndices(NP)
 
     @unpack surf_hat = fields.fourier
 
-    charges  = geometry.features[:external_field][:charged_walls]["charges"]
-    walls    = geometry.features[:external_field][:charged_walls]["position"]
+    charges  = ext_field.charges
+    walls    = ext_field.positions
 
     for K in Rsys
         idx = Tuple(K) # True domain indices
@@ -58,16 +57,15 @@ function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:charged_
 end
 
 
-function contact_value_theorem(molsys, geometry::CartesianCoord, fields, ::Val{:charged_walls})
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+function contact_value_theorem(molsys, geometry::CartesianCoord, fields, ext_field :: ExtChargedWalls)
+    @unpack NP, bin_width, mirrored, offset = geometry
 
     n_dims     = length(NP)
 
     @unpack surf_hat = fields.fourier
 
-    charges  = geometry.features[:external_field][:charged_walls]["charges"]
-    walls    = geometry.features[:external_field][:charged_walls]["position"]
+    charges  = ext_field.charges
+    walls    = ext_field.positions
 
     @unpack bjerrum_length = molsys.properties.system
 

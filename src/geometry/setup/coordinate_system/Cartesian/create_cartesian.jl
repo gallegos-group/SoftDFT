@@ -20,29 +20,50 @@ a `geometry` section with the keys `dimensions` and `bin_width`.
 # Throws
 - An error if dimensions and bin widths are not specified, mismatched, or unsupported.
 """
+
+# auto-detect version
 function create_cartesian(dataset::Dict)
+    D = length(dataset["geometry"]["dimensions"])
+    return D == 1 ? create_cartesian(dataset, Val(1)) :
+           D == 2 ? create_cartesian(dataset, Val(2)) :
+           D == 3 ? create_cartesian(dataset, Val(3)) :
+           error("Unsupported dimensionality $D")
+end
+
+function create_cartesian(dataset::Dict, ::Val{D}) where {D}
     geom = dataset["geometry"]
 
     if !haskey(geom, "dimensions") || !haskey(geom, "bin_width")
         error("Error: Please specify both `dimensions` and `bin_width` under `geometry`.")
     end
 
-    bins_vec = geom["bin_width"]
-    D = length(bins_vec)
+    bins_raw = geom["bin_width"]
+    dims_raw = geom["dimensions"]
 
-    if D != length(geom["dimensions"])
+    bins_vec = Float64[]
+    dims_vec = Float64[]
+
+    for x in bins_raw
+        push!(bins_vec, Float64(x))
+    end
+
+    for x in dims_raw
+        push!(dims_vec, Float64(x))
+    end
+
+    dims = length(bins_vec)
+
+    if dims != length(dims_vec)
         error("Error: Mismatch in number of `dimensions` and `bin_width` entries.")
-    elseif D ∉ (1, 2, 3)
+    elseif dims ∉ (1, 2, 3)
         error("Error: Only 1D, 2D, or 3D Cartesian grids are supported.")
     end
 
-    bin_width  = Tuple{Vararg{Float64, D}}(bins_vec)
-
     # Use process_cartesian to modify dimensions + build features
-    dimensions, features = process_cartesian(dataset, bin_width)
+    dimensions, external_field, offset, periodic, mirrored, total_charge, features = process_cartesian(dataset, dims_vec, bins_vec)
 
     # Convert to NTuple form
-    NP         = ntuple(i -> Int(cld(dimensions[i], bin_width[i])) + 1, D)
+    NP = ntuple(i -> Int(cld(dimensions[i], bins_vec[i])) + 1, D)
 
-    return CartesianGrid{D}(dimensions, bin_width, NP, features)
+    return CartesianGrid(Tuple(dimensions), Tuple(bins_vec), NP, periodic, mirrored, offset, total_charge, external_field, features)
 end

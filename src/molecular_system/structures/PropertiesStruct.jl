@@ -1,4 +1,31 @@
 
+struct SpeciesProperties
+    species         :: Vector{String}
+    monomers        :: Vector{String}
+    compensator     :: Vector{Bool}
+    input_pSpecies  :: Vector{Float64}
+    role            :: Vector{Symbol}
+    adjustable      :: Vector{Bool}
+    species_charge  :: Vector{Float64}
+    input_densities :: Vector{Float64}
+    state_families  :: Dict{Symbol, Vector{String}}
+end
+
+
+function SpeciesProperties(d::Dict{Symbol, Any})
+    return SpeciesProperties(
+        d[:species],
+        d[:monomers],
+        d[:compensator],
+        d[:input_pSpecies],
+        d[:role],
+        d[:adjustable],
+        d[:species_charge],
+        d[:input_densities],
+        d[:state_families],
+    )
+end
+
 """
     PropertiesStruct
 
@@ -17,9 +44,9 @@ Fields:
 
 
 struct PropertiesStruct
-    monomers::Dict{Symbol, Any}              # e.g., "diameters" => [1.0, ...]
+    monomers::Dict{Symbol, Vector{Float64}}              # e.g., "diameters" => [1.0, ...]
     pairs::Dict{Symbol, Any}                 # e.g., "square_well energys" => [1.0, ...]
-    species::Dict{Symbol, Any}               # input densities, input pSpecies, adjustable
+    species::SpeciesProperties               # input densities, input pSpecies, adjustable
     system::Dict{Symbol, Float64}            # temperature, dielectric, etc.
     reactions::Vector{ReactionStruct}         # parsed from YAML
     bond_types::Vector{Tuple{Int, Int}}      # All unique bonded bead-type pairs

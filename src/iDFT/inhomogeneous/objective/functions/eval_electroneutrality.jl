@@ -5,7 +5,7 @@ function eval_electroneutrality(
 
     @unpack configurations = bulk_system.molsys
     @unpack valences = bulk_system.molsys.properties.monomers
-    @unpack NP, bin_width, features = geometry
+    @unpack NP, bin_width, total_charge = geometry
     @unpack fixed = fields
     @unpack trapez = fields.excess
 
@@ -14,7 +14,7 @@ function eval_electroneutrality(
     
     Rsys = CartesianIndices(NP)
 
-    Qtot = sum(geometry.features[:total_charge])
+    Qtot = sum(total_charge)
 
     Num_species = zeros(Float64, length(configurations))
     species_charge = zeros(Float64, length(configurations))
@@ -37,7 +37,7 @@ function eval_electroneutrality(
             end
         end
 
-        Num_species /= length(config.sequence)
+        Num_species[u] /= length(config.sequence)
         
         if Num_species[u] <= 0.0
             species_charge[u] = 0.0
@@ -49,8 +49,9 @@ function eval_electroneutrality(
     for (u, config) in enumerate(configurations)
         has_state_family = any(length(fam) > 1 for fam in config.state_family)
         has_fixed_segment = any(fields.fixed[u].segments)
+        isevaluated = bulk_system.bulk.evaluation[u] isa SimulationEval
 
-        if has_state_family || has_fixed_segment
+        if has_state_family || has_fixed_segment || isevaluated
             Qtot += Num_species[u] * species_charge[u]
             species_charge[u] = 0.0
         end
@@ -66,8 +67,13 @@ function eval_electroneutrality(
 
     iter = 1
     while err > tolerance
-        fx = Qtot + sum(@. @~ (Cstar ^ species_charge) * Num_species * species_charge)
-        fx1 = -sum(@. @~ (Cstar ^ species_charge) * Num_species * species_charge * species_charge)
+        fx = Qtot
+        fx1 = 0.0
+        for i in eachindex(species_charge)
+            t = (Cstar ^ species_charge[i]) * Num_species[i] * species_charge[i]
+            fx += t
+            fx1 -= t * species_charge[i]
+        end
 
         err = abs(fx)
 

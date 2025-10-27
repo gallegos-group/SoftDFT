@@ -5,11 +5,12 @@ function update_spatial_structures!(
 
     @unpack configurations = bulk_system.molsys
     @unpack fixed = fields
-    @unpack NP, bin_width, features = geometry
+    @unpack NP, bin_width = geometry
     @unpack trapez = fields.excess
     
     rho_segments_K = fields.rho_K.segments
     rho_beads_K = fields.rho_K.beads
+    
     bin = prod(bin_width)
 
     Rsys = CartesianIndices(NP)

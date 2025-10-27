@@ -7,7 +7,7 @@ function write_total_state_fractions(rho_segments::Vector{<:AbstractArray{Float6
 
     nd_spatial   = length(NP)
     configs      = molsys.configurations
-    config_names = molsys.properties.species[:species]
+    config_names = molsys.properties.species.species
 
     for (i, (rho, config)) in enumerate(zip(rho_segments, configs))
         state_family = config.state_family

@@ -26,12 +26,15 @@ Modifies:
 - `features[:total_charge]`
 """
 
-function cartesian_features(features::Dict{Symbol, Any}, ::Val{:charged_walls})
-    dimensions = features[:dimensions]
-    periodic   = features[:periodic]
-    mirrored   = features[:mirrored]
+struct ExtChargedWalls <: AbstractExternalField 
+    positions :: Vector{Vector{Float64}}
+    charges :: Vector{Vector{Float64}}
+end
 
-    description = features[:external_field][:charged_walls]
+function cartesian_features(features::CartesianFeatures, data_external_field, ::Val{:charged_walls})
+    @unpack dimensions, periodic, mirrored, total_charge = features
+
+    description = data_external_field[:charged_walls]
 
     # Validate and extract dimensions to apply wall charges
     dims = get(description, "dims", nothing)
@@ -65,7 +68,7 @@ function cartesian_features(features::Dict{Symbol, Any}, ::Val{:charged_walls})
         description["position"][dim] = [0.0, dimensions[dim]]
         description["charges"][dim]  = [qL, qR]
 
-        features[:total_charge][dim] += qL + qR
+        total_charge[dim] += qL + qR
 
         if qL != qR
             mirrored[dim] = true
@@ -74,6 +77,8 @@ function cartesian_features(features::Dict{Symbol, Any}, ::Val{:charged_walls})
 
     # Normalize and store charge data back
     description["charge"] = charge
+
+    return ExtChargedWalls(description["position"], description["charges"])
 end
 
 """
@@ -84,7 +89,7 @@ charges a second time, accounting for domain doubling due to symmetry.
 
 Only applies to directions where `mirrored[dim] == true`.
 """
-function update_features(features::Dict{Symbol, Any}, ::Val{:charged_walls})
+function update_features(features::CartesianFeatures, data_external_field, ::Val{:charged_walls})
     # description = features[:external_field][:charged_walls]
     # dims = description["dims"]
     # mirrored = features[:mirrored]

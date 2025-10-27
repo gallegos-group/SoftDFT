@@ -22,7 +22,7 @@ function accumulate_densities(
     @unpack diameters, delta_muH = bulk_system.molsys.properties.monomers
 
     # Geometry
-    @unpack bin_width, NP, features = geometry
+    @unpack bin_width, NP = geometry
 
     # Topology
     @unpack state_family, topology = config_u

@@ -4,7 +4,7 @@ include("degree_of_dissociation.jl")
 include("brush_height.jl")
 include("output_arrays.jl")
 include("contact_value_theorem.jl")
-
+include("density_ij.jl")
 
 function call_analysis(dft_system :: IsingDFT)
 

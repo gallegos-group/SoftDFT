@@ -11,8 +11,7 @@ Compute the FFT-ready propagator weights for each bond type in the system.
 - `weight_bond_hat` :: Real-space bond weight field for each bond type, ready for FFT.
 """
 function process_propagator(molsys::MolecularSystem, geometry::CartesianCoord)
-    @unpack bin_width, NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack bin_width, NP, mirrored, offset = geometry
 
     NP_star = compute_full_domain(NP, mirrored, offset)
     dims_MB = (NP_star..., length(molsys.properties.bond_types))

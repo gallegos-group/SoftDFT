@@ -39,10 +39,10 @@ subtype this to provide customized behavior for chain configurations.
 abstract type AbstractSpecies end
 
 
-struct ConfigurationStruct
-    species_model :: AbstractSpecies        # Physics model for the chain (e.g., freely_jointed, monomerbead)
+struct ConfigurationStruct{AS}
+    species_model :: AS  # AbstractSpecies  # Physics model for the chain (e.g., freely_jointed, monomerbead)
     sequence      :: Vector{Int}            # Monomer indices for each bead, from used_monomers
     states        :: Vector{Int}            # Number of states per bead (1 = no switching, >1 = e.g. protonation)
     topology      :: TopologyStruct         # Parsed topology from sequence string (e.g., linear, branched)
-    state_family  :: Vector{Vector{Int}}     # For each bead, list of possible monomer states (["A", "B", "C"])
+    state_family  :: Vector{Vector{Int}}    # For each bead, list of possible monomer states (["A", "B", "C"])
 end

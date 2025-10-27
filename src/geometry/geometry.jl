@@ -6,6 +6,7 @@ using UnPack
 abstract type CoordSystem end
 
 # === Core Data Structures ===
+include("structures/AbstractExternalField.jl")
 include("structures/Cartesian.jl")
 
 # === Setup Logic ===

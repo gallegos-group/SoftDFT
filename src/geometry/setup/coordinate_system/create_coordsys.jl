@@ -21,6 +21,7 @@ Example:
     )
     grid = create_coordinate_system(dataset)
 """
+
 function create_coordinate_system(dataset::Dict)
     geom = get(dataset, "geometry", nothing)
     isnothing(geom) && error("Missing required section: 'geometry'.")

@@ -35,15 +35,16 @@ function initalize_densities(molsys :: MolecularSystem)
     @unpack delta_muH = monomers
     @unpack species_charge = species
 
-    n_species = length(species[:species])
+    n_species = length(species.species)
 
-    valences = get!(monomers, :valences, zeros(Float64, n_species))
     
     rho_species  = zeros(n_species)
     rho_segments = Vector{Matrix{Float64}}(undef, n_species)
     rho_pairs    = Vector{Array{Float64, 4}}(undef, n_species)
-    rho_beads    = zeros(length(species[:monomers]))
+    rho_beads    = zeros(length(species.monomers))
     rho_bonds    = zeros(2, length(bond_types))
+
+    valences = get!(monomers, :valences, zeros(Float64, length(species.monomers)))
 
     @. species_charge = 0.0
 
@@ -56,13 +57,13 @@ function initalize_densities(molsys :: MolecularSystem)
         rho_segments[u] = zeros(max_states, n_segments)
         rho_pairs[u] = zeros(max_states, n_segments, max_states, n_segments)
 
-        if !isnan(species[:input_pSpecies][u])
+        if !isnan(species.input_pSpecies[u])
             # Convert mol/L → reduced density
-            conc = 10.0^(-species[:input_pSpecies][u])
+            conc = 10.0^(-species.input_pSpecies[u])
             density = concentration_to_density(conc, molsys.constants)
         else
             # Already given as reduced density
-            density = species[:input_densities][u]
+            density = species.input_densities[u]
         end
 
         polymer_density = density / n_segments

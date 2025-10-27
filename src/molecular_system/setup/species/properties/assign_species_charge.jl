@@ -17,5 +17,5 @@ function assign_species_charge!(configurations::Vector{ConfigurationStruct}, pro
         end
     end
 
-    properties.species[:species_charge] = species_charge
+    @. properties.species.species_charge = species_charge
 end

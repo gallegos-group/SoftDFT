@@ -26,12 +26,18 @@ Represents a regular Cartesian grid in D dimensions.
 # === Cartesian Coordinate System Abstract Type ===
 abstract type CartesianCoord <: CoordSystem end
 
-# === Cartesian Grid Structure ===
+include("CartesianFeatures.jl")
+# # === Cartesian Grid Structure ===
 struct CartesianGrid{D} <: CartesianCoord
     dimensions :: NTuple{D, Float64}      # Domain size in each direction
     bin_width  :: NTuple{D, Float64}      # Bin width in each direction
     NP         :: NTuple{D, Int}          # Number of bins in each direction
-    features   :: Dict{Symbol, Any}       # Optional tags (e.g., symmetry, wall info)
+    periodic   :: Vector{Bool}
+    mirrored   :: Vector{Bool}
+    offset     :: Vector{Int}
+    total_charge :: Vector{Float64}
+    external_field :: Vector{AbstractExternalField}
+    features   :: CartesianFeatures       # Optional tags (e.g., symmetry, wall info)
 end
 
 # === Convenient Type Aliases ===

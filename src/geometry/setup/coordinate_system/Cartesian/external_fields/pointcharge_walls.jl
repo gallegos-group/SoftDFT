@@ -25,15 +25,18 @@ Modifies:
 - `features[:external_field][:pointcharge_walls][:charges]`
 - `features[:total_charge]`
 """
-function cartesian_features(features::Dict{Symbol, Any}, ::Val{:pointcharge_walls})
-    description = features[:external_field][:pointcharge_walls]
+
+struct ExtPointChargeWalls <: AbstractExternalField 
+    positions :: Vector{Vector{Float64}}
+    charges :: Vector{Vector{Float64}}
+end
+
+function cartesian_features(features::CartesianFeatures, data_external_field, ::Val{:pointcharge_walls})
+    @unpack dimensions, periodic, mirrored, total_charge = features
+    description = data_external_field[:pointcharge_walls]
 
     dims = get(description, "dims", nothing)
     isnothing(dims) && error("Please specify the wall dimensions under 'dims'.")
-
-    dimensions = features[:dimensions]
-    periodic   = features[:periodic]
-    mirrored   = features[:mirrored]
 
     charge = get(description, "charge", nothing)
     isnothing(charge) && error("Please provide wall charges under 'charge'.")
@@ -63,15 +66,17 @@ function cartesian_features(features::Dict{Symbol, Any}, ::Val{:pointcharge_wall
         description["position"][dim] = [0.0, dimensions[dim]]
         description["charges"][dim]  = [qL, qR]
 
-        features[:total_charge][dim] += qL + qR
+        total_charge[dim] += qL + qR
 
         if qL != qR
             mirrored[dim] = true
         end
     end
+    
+    return ExtPointChargeWalls(description["position"], description["charges"])
 end
 
-function update_features(features::Dict{Symbol, Any}, ::Val{:pointcharge_walls})
+function update_features(features::CartesianFeatures, data_external_field, ::Val{:pointcharge_walls})
     # description = features[:external_field][:pointcharge_walls]
     # dims = description["dims"]
     # mirrored = features[:mirrored]

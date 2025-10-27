@@ -1,9 +1,20 @@
-function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, functionals :: Vector{AbstractFunctional})
+# === Base case: empty tuple (no functionals) ===
+@inline function eval_fe_functional(
+    bulk_system::IsingLST,
+    geometry::CoordSystem,
+    fields::SpatialFields,
+    ::Tuple{}
+)
+    return 0.0
+end
 
-    fe = 0.0
-    for (_, fe_term) in enumerate(functionals)
-        fe += eval_fe_functional(bulk_system, geometry, fields, fe_term)
-    end
-
-    return fe
+# === Recursive case: process the first functional, then recurse ===
+@inline function eval_fe_functional(
+    bulk_system::IsingLST,
+    geometry::CoordSystem,
+    fields::SpatialFields,
+    functionals::Tuple
+)
+    return eval_fe_functional(bulk_system, geometry, fields, functionals[1]) +
+           eval_fe_functional(bulk_system, geometry, fields, Base.tail(functionals))
 end

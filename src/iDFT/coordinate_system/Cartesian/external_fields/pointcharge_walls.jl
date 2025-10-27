@@ -3,17 +3,16 @@
     #   dims: [1]
     #   charge: [0.0, -0.0]
 
-function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:pointcharge_walls})
-    @unpack NP, bin_width, features = geometry
-    @unpack offset, mirrored = features
+function eval_External(molsys, geometry::CartesianCoord, fields, ext_field :: ExtPointChargeWalls)
+    @unpack NP, bin_width, offset, mirrored = geometry
 
     n_dims = length(NP)
     inv_voxel_volume = 1.0 / prod(bin_width)
 
     @unpack surf_hat = fields.fourier
 
-    charges  = features[:external_field][:pointcharge_walls]["charges"]
-    walls    = features[:external_field][:pointcharge_walls]["position"]
+    charges  = ext_field.charges
+    walls    = ext_field.positions
 
     Rsys = CartesianIndices(NP)  # true domain
 

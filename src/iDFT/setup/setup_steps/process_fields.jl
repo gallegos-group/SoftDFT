@@ -19,7 +19,7 @@ This includes:
 """
 function process_fields(molsys::MolecularSystem, geometry::CoordSystem)
     NP = geometry.NP
-    NB = length(molsys.properties.species[:monomers])
+    NB = length(molsys.properties.species.monomers)
     MB = length(molsys.properties.bond_types)
 
     dims_NB = (NP..., NB)
@@ -51,7 +51,7 @@ function process_fields(molsys::MolecularSystem, geometry::CoordSystem)
     fourier = process_fourier(molsys, geometry)
 
     # === Fixed Species ===
-    fixed = [FixedSpecies(length(cfg.sequence)) for cfg in molsys.configurations]
+    fixed = [FixedSpecies(length(cfg.sequence), length(NP)) for cfg in molsys.configurations]
 
     # === Bundle everything into SpatialFields ===
     return SpatialFields(density_fields, excess_fields, fourier, fixed)

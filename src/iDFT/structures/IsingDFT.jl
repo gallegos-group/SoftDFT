@@ -19,10 +19,10 @@ as the core data object passed through setup, evaluation, and analysis routines 
 - `numerics::Dict{String, Any}` — Numerical parameters for convergence, tolerances, and solver behavior.
 """
 
-struct IsingDFT
+struct IsingDFT{IsingLST, CS, SF, Funcs}
     bulk_system :: IsingLST
-    geometry :: CoordSystem
-    fields :: SpatialFields
-    functionals :: Vector{AbstractFunctional}
-    numerics :: Dict{String, Any}
+    geometry :: CS
+    fields :: SF
+    functionals :: Funcs
+    numerics :: Dict{String, Float64}
 end

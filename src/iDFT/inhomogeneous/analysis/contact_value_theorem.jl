@@ -5,8 +5,8 @@ end
 function contact_value_theorem(molsys, geometry, fields; filename="cvt.txt")
 
     contr = zeros(Float64, (2,length(geometry.NP)))
-    for (name, _) in geometry.features[:external_field]
-        contr .+= contact_value_theorem(molsys, geometry, fields, Val{Symbol(name)}())
+    for ext_field in geometry.external_field
+        contr .+= contact_value_theorem(molsys, geometry, fields, ext_field)
     end
 
     open(filename, "w") do io

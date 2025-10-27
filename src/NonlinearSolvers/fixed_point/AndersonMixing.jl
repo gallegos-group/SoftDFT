@@ -71,12 +71,12 @@ function solver_function(
     end
 
     # --- Numerical Options ---
-    max_iters   = get(numerical_details, "max_iters", 100000)
+    max_iters   = Int(get(numerical_details, "max_iters", 100000))
     damping     = get(numerical_details, "damping", 0.5)
     mix_max     = get(numerical_details, "mixing_max", 1.0)
-    switch_tole = get(numerical_details, "switch_tole", 1e-1)
+    switch_tole = get(numerical_details, "switch_tole", 1e-2)
     tole        = get(numerical_details, "tole", 1e-6)
-    anderm      = get(numerical_details, "anderm", 5)
+    anderm      = Int(get(numerical_details, "anderm", 5))
 
     # --- Initialization ---
     X      = zeros(Float64, n, anderm)
@@ -92,70 +92,74 @@ function solver_function(
     use_picard = true
     start_time = time()
 
-    while iter < max_iters
-        iter += 1
-        current = objective_function(problem_data)
+    open(error_file, "a") do file
+        while iter < max_iters
+            iter += 1
+            current = objective_function(problem_data)
 
-        col = mod(iter - 1, anderm) + 1
-        flatten_solution!(X_k, solution_variables)
-        flatten_solution!(G_k, current)
+            col = mod(iter - 1, anderm) + 1
+            flatten_solution!(X_k, solution_variables)
+            flatten_solution!(G_k, current)
 
-        @. G_k -= X_k
-        @. @views X[:, col] = X_k
-        @. @views G[:, col] = G_k
+            @inbounds for k in eachindex(X_k)
+                G_k[k] -= X_k[k]
+                X[k, col] = X_k[k]
+                G[k, col] = G_k[k]
+            end
 
-        err = max(maximum(abs, G_k), 1e-20)  # Prevent division by zero
+            err = max(maximum(abs, G_k), 1e-20)  # Prevent division by zero
 
-        amix = min(mix_max, damping / err)
+            amix = min(mix_max, damping / err)
 
-        # Log error
-        msg = "Error is $err at iteration $iter.\n"
-        open(error_file, "a") do file
+            # Log error
+            msg = "Error is $err at iteration $iter.\n"
             write(file, msg)
-        end
 
-        elapsed = time() - start_time
-        print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
+            elapsed = time() - start_time
+            print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
 
-        if iter < anderm || (err > switch_tole && use_picard)
-            # Use Picard mixing
-            apply_mixing!(solution_variables, current, amix)
-        else
-            use_picard = false
+            if iter < anderm || (err > switch_tole && use_picard)
+                # Use Picard mixing
+                apply_mixing!(solution_variables, current, amix)
+            else
+                use_picard = false
 
-            # Build ΔX, ΔG history
-            i = 0
-            for j in 1:anderm
-                if j == col
-                    continue
+                # Build ΔX, ΔG history
+                i = 0
+                @inbounds for j in 1:anderm
+                    if j == col
+                        continue
+                    end
+                    i += 1
+                    for k in eachindex(X_k)
+                        tempX[k, i] = X[k, j] - X_k[k]
+                        tempG[k, i] = G[k, j] - G_k[k]
+                    end
                 end
-                i += 1
-                @. @views tempX[:, i] = X[:, j] - X_k
-                @. @views tempG[:, i] = G[:, j] - G_k
+
+                lsqr!(lambdas, tempG, -G_k)
+
+                result = X_k + tempX * lambdas + amix * (G_k + tempG * lambdas)
+
+                # # Apply constraints to `result` before using it
+                # idx_start = 1
+                # for j in eachindex(ni)
+                #     idx_end = idx_start + ni[j] - 1
+                #     @. @views result[idx_start:idx_end] = constraints[j](result[idx_start:idx_end])
+                #     idx_start = idx_end + 1
+                # end
+
+                # # Apply full update
+                apply_mixing!(X_k, result, 1.0)
+                apply_flat_solution!(solution_variables, X_k)
             end
-
-            lsqr!(lambdas, tempG, -G_k)
-
-            result = X_k + tempX * lambdas + amix * (G_k + tempG * lambdas)
-
-            # Apply constraints to `result` before using it
-            idx_start = 1
-            for j in eachindex(ni)
-                idx_end = idx_start + ni[j] - 1
-                @. @views result[idx_start:idx_end] = constraints[j](result[idx_start:idx_end])
-                idx_start = idx_end + 1
+    # println(err)
+            if err < tole
+                break
             end
-
-            # Apply full update
-            apply_mixing!(X_k, result, 1.0)
-            apply_flat_solution!(solution_variables, X_k)
         end
 
-        if err < tole
-            break
-        end
     end
-
-    println()  # Newline after progress bar
+    # println()  # Newline after progress bar
     return iter
 end

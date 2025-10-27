@@ -2,7 +2,7 @@ function process_guess(dft_system)
     return process_guess(dft_system.bulk_system, dft_system.geometry, dft_system.fields)
 end
 
-function process_guess(bulk_system, geometry, fields)
+function process_guess(bulk_system :: IsingLST, geometry, fields :: SpatialFields)
     @unpack bulk, molsys = bulk_system
 
     rho_segments_K = fields.rho_K.segments

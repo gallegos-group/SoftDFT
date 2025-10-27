@@ -1,7 +1,5 @@
 function apply_mirroring!(field_K::AbstractArray, geometry)
-    NP       = geometry.NP                   # true dimensions
-    offset   = geometry.features[:offset]    # ::NTuple
-    mirrored = geometry.features[:mirrored]  # ::Vector{Bool}
+    @unpack NP, offset, mirrored = geometry
     NDIM     = length(NP)
 
     spatial_iter  = CartesianIndices(NP)

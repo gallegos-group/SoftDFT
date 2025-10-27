@@ -1,6 +1,3 @@
-struct AndersonResidual <: AbstractResidualSolver end
-
-
 """
     solver_function(
         solver_type::AndersonResidual,
@@ -69,8 +66,8 @@ function solver_function(
     iter = 0
     err = 1.0
     start_time = time()
-
-    while iter < max_iters
+        open(error_file, "w") do file
+    while iter < 4 #max_iters
         iter += 1
 
         # Apply current guess to solution_variables
@@ -93,9 +90,9 @@ function solver_function(
 
         # Logging
         msg = "Residual error is $err at iteration $iter.\n"
-        open(error_file, "a") do file
+
             write(file, msg)
-        end
+
         elapsed = time() - start_time
         # print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
 
@@ -135,6 +132,7 @@ function solver_function(
         end
     end
 
+    end
     # println()
     return iter
 end

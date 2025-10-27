@@ -20,8 +20,7 @@ function compute_parent_propagators(
     @unpack f_hat, plan_forward, plan_backward, weight_bonds_hat = fields.fourier
 
     # Geometry
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     Rsys = CartesianIndices(NP)
 
     # Topology

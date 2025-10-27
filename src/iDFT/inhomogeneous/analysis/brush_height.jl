@@ -3,7 +3,7 @@ function brush_height(dft_system; filename::String = "brush_height.txt")
     trapez         = dft_system.fields.excess.trapez
     molsys         = dft_system.bulk_system.molsys
     fixed_species  = dft_system.fields.fixed
-    species_names  = molsys.properties.species[:species]
+    species_names  = molsys.properties.species.species
     species_configs = molsys.configurations
     @unpack NP, bin_width = dft_system.geometry
 

@@ -151,7 +151,7 @@ function free_energy_TPT1msa(ρ_bonds, bond_types, ρ, σ, Z, ℓB)
         f_ch -= 0.5 * (ρ_bonds[1, u] + ρ_bonds[2, u]) * lng
     end
 
-    return f_el*0.0 + f_ch
+    return f_el + f_ch
 end
 
 """
@@ -202,7 +202,7 @@ function compute_TPT1msa_deriv!(dΦ, lng, ρ_bonds, bond_types, ρ, σ, Z, ℓB)
     @. lng = 0.0
     @. dΦ = 0.0
 
-    # compute_msa_deriv!(dΦ, ρ, σ, Z, ℓB)
+    compute_msa_deriv!(dΦ, ρ, σ, Z, ℓB)
 
     Γ, η, H = Gamma_msa(ρ, σ, Z, ℓB)
 

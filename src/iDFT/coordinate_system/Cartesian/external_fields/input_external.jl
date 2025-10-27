@@ -3,7 +3,7 @@ using DelimitedFiles
 #   external_field:
     # input_external
 
-function eval_External(molsys, geometry::CartesianCoord, fields, ::Val{:input_external})
+function eval_External(molsys, geometry::CartesianCoord, fields, ext_field :: ExtInputExt)
     @unpack Ext, trapez = fields.excess
     @unpack NP = geometry
     NP = geometry.NP

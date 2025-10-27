@@ -19,16 +19,26 @@ Returns:
 Throws:
 - An error if any model name is not found in the registry.
 """
+# function initialize_fe_model(models_list::Vector{Symbol}, rho)
+#     validate_model_keys(models_list)
+
+#     model = Vector{AbstractFreeEnergy}()
+#     for name in models_list
+#         model_type = get_model(name)
+#         model_instance = construct_free_energy(model_type, rho)
+#         push!(model, model_instance)
+#     end
+
+#     return model
+# end
+
 function initialize_fe_model(models_list::Vector{Symbol}, rho)
     validate_model_keys(models_list)
 
-    model = Vector{AbstractFreeEnergy}()
-    for name in models_list
+    models = map(models_list) do name
         model_type = get_model(name)
-        model_instance = construct_free_energy(model_type, rho)
-        push!(model, model_instance)
+        construct_free_energy(model_type, rho)
     end
 
-    return model
+    return Tuple(models)
 end
-

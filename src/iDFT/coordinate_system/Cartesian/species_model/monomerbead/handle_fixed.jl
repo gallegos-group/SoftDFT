@@ -12,7 +12,7 @@ function handle_fixed(
     @unpack delta_muH = bulk_system.molsys.properties.monomers
 
     # Geometry
-    @unpack bin_width, NP, features = geometry
+    @unpack bin_width, NP = geometry
 
     # Topology
     @unpack state_family = bulk_system.molsys.configurations[u]

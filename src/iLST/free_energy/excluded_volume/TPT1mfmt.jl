@@ -329,8 +329,8 @@ function compute_TPT1mfmt_deriv!(
 
     # Hard sphere contribution from MFMT (same across species)
     compute_mfmt_deriv!(view(dΦ, :, 1), n0, n1, n2, n3, nV1, nV2)
-    for W in axes(dΦ, 2)
-        @. dΦ[:, W] = dΦ[:, 1]
+    @views for j in Iterators.drop(axes(dΦ, 2), 1)
+        @. dΦ[:, j] = dΦ[:, 1]
     end
 
     # TPT1 correction terms
@@ -411,8 +411,8 @@ function compute_TPT1mfmt_deriv!(
 
     # Hard sphere contribution from MFMT (same across species)
     compute_mfmt_deriv!(view(dΦ, :, 1), n0, n1, n2, n3)
-    for W in axes(dΦ, 2)
-        @. dΦ[:, W] = dΦ[:, 1]
+    @views for j in Iterators.drop(axes(dΦ, 2), 1)
+        @. dΦ[:, j] = dΦ[:, 1]
     end
 
     # TPT1 correction terms (bulk)
@@ -442,6 +442,4 @@ function compute_TPT1mfmt_deriv!(
         
         lng[u] = log(y_HS)
     end
-
-    return dΦ, lng
 end

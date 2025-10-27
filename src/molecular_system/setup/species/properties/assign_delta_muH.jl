@@ -61,9 +61,9 @@ function assign_delta_muH!(
     delta_muH = zeros(length(used_monomers))
 
     idx_of    = used_monomers
-    densities = species_data[:input_densities]
-    pSpecies  = species_data[:input_pSpecies]
-    names     = species_data[:species]
+    densities = species_data.input_densities
+    pSpecies  = species_data.input_pSpecies
+    names     = species_data.species
     name_to_index = Dict(name => i for (i, name) in enumerate(names))
 
     

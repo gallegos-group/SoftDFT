@@ -17,8 +17,7 @@ Constructs an `mfmtFunctional` representing the modified fundamental measure the
 - A fully initialized `mfmtFunctional` object.
 """
 function construct_functional(::Type{mfmtFunctional}, molsys::MolecularSystem, bulk::BulkState, geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
     @unpack diameters = molsys.properties.monomers
 
     # work on the calculation domain
@@ -138,8 +137,7 @@ end
 function compute_pointwise_free_energy(fe_term::mfmtFunctional,
                                        nai_K::AbstractArray,
                                        bulk_system, geometry)
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, mirrored, offset = geometry
 
     @unpack nV1, nV2 = fe_term.model
     @unpack diameters = bulk_system.molsys.properties.monomers

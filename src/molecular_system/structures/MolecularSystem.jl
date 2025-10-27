@@ -30,8 +30,8 @@ include("TopologyStruct.jl")        # Topology
 include("ConfigurationStruct.jl")   # Per-species polymer model and sequence info
 include("PropertiesStruct.jl")      # Species/reaction properties and FE models
 
-struct MolecularSystem
-    configurations::Vector{ConfigurationStruct}
+struct MolecularSystem{CS}
+    configurations::CS
     properties::PropertiesStruct
     constants::ConstantsStruct
 end

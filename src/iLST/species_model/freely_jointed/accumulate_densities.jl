@@ -96,7 +96,7 @@ function accumulate_densities!(
                         bond = (min(state_i, state_j), max(state_i, state_j))
                         idx = findfirst(==(bond), bond_types)
                         if idx !== nothing
-                            @. rho_bonds[:, idx] += f
+                            @views @. rho_bonds[:, idx] += f
                         end
                     end
                 end

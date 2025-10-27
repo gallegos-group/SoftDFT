@@ -53,7 +53,7 @@ function eval_residuals!(molsys::MolecularSystem, bulk::BulkState)
     end
 
     # === 3. Charge neutrality residual ===
-    total_charge = -sum(species_charge[i] * rho.species[i] for i in eachindex(species))
+    total_charge = -sum(@. @~ species_charge * rho.species)
     push!(residuals, total_charge)
     
     return (residuals,)

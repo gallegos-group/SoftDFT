@@ -17,8 +17,7 @@ Constructs a `SquareWellFunctional` for square-well interactions in DFT.
 - A fully initialized `SquareWellFunctional` object.
 """
 function construct_functional(::Type{SquareWellFunctional}, molsys::MolecularSystem, bulk::BulkState, geometry::CartesianCoord)
-    @unpack NP, bin_width, features = geometry
-    @unpack mirrored, offset = features
+    @unpack NP, bin_width, mirrored, offset = geometry
 
     @unpack monomers, pairs = molsys.properties
     @unpack diameters = monomers
@@ -61,8 +60,7 @@ end
 
 
 function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, fe_term :: SquareWellFunctional)
-    @unpack features = geometry
-    @unpack mirrored, offset = features
+    @unpack mirrored, offset = geometry
 
     # Calculate excess fe contribution by weighting point-wise derivative
     @unpack species, pairs, energys = bulk_system.molsys.properties.pairs[:square_well]

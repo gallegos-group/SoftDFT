@@ -39,6 +39,8 @@ solve(AndersonResidual(), my_residual_function, solution; numerical_details = Di
 
 """
 
+using UnPack
+
 # Abstract types and utilities
 include("core/AbstractSolver.jl")
 
@@ -49,5 +51,5 @@ include("fixed_point/FixedPointSolver.jl")
 include("residual/ResidualSolver.jl")
 
 # Continuation methods
-# include("continuation/Continuation.jl")
+include("continuation/Continuation.jl")
 

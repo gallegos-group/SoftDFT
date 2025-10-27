@@ -1,19 +1,22 @@
-function eval_mu_functional!(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, functionals :: Vector{AbstractFunctional})
-    @unpack NP, features = geometry
-    @unpack mirrored, offset = features
+function eval_mu_functionals!(
+    bulk_system :: IsingLST,
+    geometry    :: CoordSystem,
+    fields      :: SpatialFields,
+    functionals :: F
+        ) where {F <: Tuple{Vararg{AbstractFunctional}}}
+
+    @unpack NP, mirrored, offset = geometry
 
     @unpack mu_ex_K, lng_K = fields.excess
-    @unpack mu_ex_hat, lng_hat, f_hat, plan_backward = fields.fourier
+    @unpack mu_ex_hat, mu_sim_hat, lng_hat, f_hat, plan_backward = fields.fourier
 
     @. mu_ex_K = 0.0
     @. lng_K = 0.0
 
-    @. mu_ex_hat = 0.0
+    @. mu_ex_hat = mu_sim_hat  # Zero if no external field simulation
     @. lng_hat = 0.0
 
-    for (_, fe_term) in enumerate(functionals)
-        eval_mu_functional!(bulk_system, fields, fe_term)
-    end
+    eval_mu_functional!(bulk_system, fields, functionals)
 
     Rsys_star = CartesianIndices(f_hat)
     Rsys = CartesianIndices(NP)
@@ -45,4 +48,24 @@ function eval_mu_functional!(bulk_system :: IsingLST, geometry :: CoordSystem, f
             end
         end
     end
+end
+
+
+# Base case: empty tuple → stop
+@inline function eval_mu_functional!(
+    bulk_system::IsingLST,
+    fields::SpatialFields,
+    ::Tuple{}
+)
+    return
+end
+
+# Recursive case: process the first functional, then recurse on the rest
+@inline function eval_mu_functional!(
+    bulk_system::IsingLST,
+    fields::SpatialFields,
+    functionals::Tuple
+)
+    eval_mu_functional!(bulk_system, fields, functionals[1])
+    eval_mu_functional!(bulk_system, fields, Base.tail(functionals))
 end
