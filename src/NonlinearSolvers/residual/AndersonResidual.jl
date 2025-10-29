@@ -67,7 +67,7 @@ function solver_function(
     err = 1.0
     start_time = time()
         open(error_file, "w") do file
-    while iter < 4 #max_iters
+    while iter < max_iters
         iter += 1
 
         # Apply current guess to solution_variables
@@ -94,7 +94,7 @@ function solver_function(
             write(file, msg)
 
         elapsed = time() - start_time
-        # print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
+        print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
 
         if iter < anderm || err > switch_mix
             prev_col = mod(iter-1, anderm) + 1

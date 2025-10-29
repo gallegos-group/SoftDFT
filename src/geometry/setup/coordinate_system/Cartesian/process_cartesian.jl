@@ -18,7 +18,7 @@ function process_cartesian(dataset::Dict, dims_vec, bins_vec)
     # Base geometry metadata
     dimensions    = copy(dims_vec)
     periodic      = fill(true, D)
-    mirrored      = fill(false, D)
+    mirrored      = fill(true, D)
     offset        = zeros(Int, D)
     total_charge  = zeros(Float64, D)
 

@@ -31,7 +31,7 @@ function compute_child_propagators(
     # Fixed Segments
     fixed_species_u = fields.fixed[u]
     fixed_segments = fixed_species_u.segments
-    fixed_coordinates = fixed_species_u.coordinates[1]
+    fixed_coordinates = fixed_species_u.coordinates
     
     max_states = maximum(length, state_family)
     max_childs = max(maximum(x -> length(x), children), 1)

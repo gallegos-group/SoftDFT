@@ -92,7 +92,9 @@ function solver_function(
     use_picard = true
     start_time = time()
 
-    open(error_file, "a") do file
+    # open(error_file, "a") do file
+    io = open(error_file, "w")
+    try
         while iter < max_iters
             iter += 1
             current = objective_function(problem_data)
@@ -113,7 +115,7 @@ function solver_function(
 
             # Log error
             msg = "Error is $err at iteration $iter.\n"
-            write(file, msg)
+            write(io, msg)
 
             elapsed = time() - start_time
             print("\r$msg Elapsed: $(round(elapsed, digits=2))s"); flush(stdout)
@@ -158,8 +160,10 @@ function solver_function(
                 break
             end
         end
-
+    finally
+        close(io)
     end
+
     # println()  # Newline after progress bar
     return iter
 end

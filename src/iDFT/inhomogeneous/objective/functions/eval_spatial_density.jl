@@ -49,6 +49,21 @@ end
     end
 end
 
+@generated function _eval_spatial_density_tuple!(rho1_segments_K, rho1_bonds_K,
+                                                 bulk_system::IsingLST,
+                                                 geometry::CartesianCoord,
+                                                 fields::SpatialFields,
+                                                 evals::Tuple{Vararg{AbstractEvaluation, N}}) where {N}
+    quote
+        Base.Cartesian.@nexprs $N i -> begin
+            segs, bonds = eval_spatial_density(i, bulk_system, geometry, fields, evals[i])
+            @. rho1_segments_K[i] += segs
+            @. rho1_bonds_K += bonds
+        end
+    end
+end
+
+
 function eval_spatial_density(bulk_system::IsingLST,
                               geometry::CartesianCoord,
                               fields::SpatialFields)
