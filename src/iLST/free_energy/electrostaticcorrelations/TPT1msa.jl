@@ -145,7 +145,7 @@ function free_energy_TPT1msa(ρ_bonds, bond_types, ρ, σ, Z, ℓB)
         
         X_i  = (Z[i] - η*σ[i]^2) / (1.0 + Γ*σ[i])
         X_j  = (Z[j] - η*σ[j]^2) / (1.0 + Γ*σ[j])
-
+        
         lng = -ℓB / σ_ij * X_i * X_j
 
         f_ch -= 0.5 * (ρ_bonds[1, u] + ρ_bonds[2, u]) * lng

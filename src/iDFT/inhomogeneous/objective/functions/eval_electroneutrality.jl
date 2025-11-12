@@ -97,3 +97,51 @@ function eval_electroneutrality(
     
     return @. fields.excess.PsiC + Psi1C
 end
+
+function foo(dft_system)
+
+@unpack bulk_system, geometry, fields = dft_system;
+    @unpack configurations = bulk_system.molsys
+    @unpack valences = bulk_system.molsys.properties.monomers
+    @unpack NP, bin_width, total_charge = geometry
+    @unpack fixed = fields
+    @unpack trapez = fields.excess
+
+    rho_segments_K = fields.rho_K.segments
+    bin = prod(bin_width)
+    
+    Rsys = CartesianIndices(NP)
+
+    Qtot = sum(total_charge)
+
+    Num_species = zeros(Float64, length(configurations))
+    species_charge = zeros(Float64, length(configurations))
+    for (u, config) in enumerate(configurations)
+        rho_segments_u = rho_segments_K[u]
+        for seg_i in eachindex(config.sequence)
+            for (idx_i, state_i) in enumerate(config.state_family[seg_i])
+                if fixed[u].segments[seg_i]
+                    K = CartesianIndex(fixed[u].coordinates[1][seg_i])
+                    num = rho_segments_u[K, idx_i, seg_i]
+                else
+                    num = 0.0
+                    for K in Rsys
+                        num += rho_segments_u[K, idx_i, seg_i]*trapez[K, state_i]*bin
+                    end
+                end
+
+                Num_species[u] += num
+                species_charge[u] += num*valences[state_i]
+            end
+        end
+
+        Num_species[u] /= length(config.sequence)
+        
+        if Num_species[u] <= 0.0
+            species_charge[u] = 0.0
+        else
+            species_charge[u] /= Num_species[u]
+        end
+    end
+    return species_charge
+end

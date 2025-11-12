@@ -23,5 +23,5 @@ struct SpatialFields{D, E, F, FS}
     rho_K      :: D             # DensityFields
     excess     :: E             # ExcessFields
     fourier    :: F             # FourierCache
-    fixed      :: FS            # Vector{FixedSpecies}
+    fixed      :: FS            # Tuple{FixedSpecies}
 end

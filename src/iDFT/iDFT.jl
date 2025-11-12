@@ -37,18 +37,3 @@ function iDFT(input_file::String)
 
     return dft_system
 end
-
-"""
-    iDFT(dft_system::IsingDFT) -> IsingDFT
-
-Evaluate an already constructed `IsingDFT` object.
-"""
-function iDFT(dft_system::IsingDFT)
-    eval_bulksolution(dft_system.mol_sys, dft_system.bulk_state)
-
-    eval_external_field(dft_system.mol_sys, dft_system.geometry, dft_system.fields)
-
-    eval_inhomogeneous(dft_system)
-
-    return dft_system
-end

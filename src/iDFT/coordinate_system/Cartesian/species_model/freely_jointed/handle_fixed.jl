@@ -104,17 +104,17 @@ function handle_fixed(
         #     println(lambda)
     else
         lambda = 1.0
-        norm = 1.0
+        norm = (normative^(n_segments-1))
     end
     
-    fields.fixed[u].lambda[1] = lambda
-
     if !isfinite(lambda) || lambda <= 0
         error("Normalization error: λ = $lambda for species $u. Check propagator integrity.")
     end
     norm *= 1.0/lambda
 
     lambda /= normative^(n_segments-1)
+
+    fields.fixed[u].lambda[1] = lambda
 
     return norm
 end

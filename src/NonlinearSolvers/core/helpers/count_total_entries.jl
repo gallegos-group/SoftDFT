@@ -12,6 +12,7 @@ count_total_entries(var::AbstractArray) = 0
 
 # For nested arrays (e.g., tuples of arrays, arrays of arrays)
 count_total_entries(var::AbstractVector) = sum(count_total_entries.(var))
+count_total_entries(var::Tuple) = sum(count_total_entries.(var))
 
 # Need to revisit this one
 if isdefined(Main, :ContinuationVariable)
