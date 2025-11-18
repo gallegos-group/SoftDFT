@@ -67,18 +67,25 @@ Returns:
 #     functionals = filter(!isnothing, functionals)
 #     return Tuple(functionals)
 # end
-
 function process_functionals(bulk_system::IsingLST, geometry::CoordSystem)
     models_list = bulk_system.molsys.properties.fe_model
     validate_functional_keys(models_list)
 
     functionals = map(models_list) do name
         ftype = get_functional(name)
-        is_ideal(ftype) && return nothing
-        construct_functional(ftype, bulk_system.molsys, bulk_system.bulk, geometry)
+
+        # Skip 1) ideal terms, 2) Coulomb long-range solvers
+        if is_ideal(ftype) || is_coulomb_model(ftype)
+            return nothing
+        end
+
+        return construct_functional(ftype,
+                                    bulk_system.molsys,
+                                    bulk_system.bulk,
+                                    geometry)
     end
 
-    functionals = filter(!isnothing, functionals)
-    return Tuple(functionals)
+    return Tuple(filter(!isnothing, functionals))
 end
+
 

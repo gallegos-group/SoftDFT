@@ -10,7 +10,7 @@ include("../NonlinearSolvers/NonlinearSolvers.jl")
 include("../molecular_system/molecular_system.jl")   # Defines `molecular_system(...)`
 include("structures/IsingLST.jl")                    # Defines `iLST_Structure`
 include("setup/setup_iLST.jl")                       # Builds full iLST structure
-include("bulkstate/eval_bulkstate.jl")               # Solves the bulk problem
+include("evaluation/eval_bulkstate.jl")               # Solves the bulk problem
 
 # === Main Entry Point ===
 

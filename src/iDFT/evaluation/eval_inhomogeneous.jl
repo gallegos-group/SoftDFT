@@ -9,13 +9,3 @@ function eval_inhomogeneous(dft_system :: IsingDFT)
 
     println("\ninhomogeneous system solved.\n")
 end
-
-function eval_inhomogeneous(dft_system :: IsingDFT, a :: Int)
-
-    solver_dft(dft_system)
-
-    call_analysis(dft_system)
-
-    println("\ninhomogeneous system solved.\n")
-end
-

@@ -43,7 +43,7 @@ function solver_function(
     max_iters   = get(numerical_details, "max_iters", 100000)
     damping     = get(numerical_details, "damping", 0.1)
     mix_max     = get(numerical_details, "mixing_max", 0.1)
-    switch_mix  = get(numerical_details, "switch_mix", 0.01)
+    switch_mix  = get(numerical_details, "switch_mix", 1e-4)
     tole        = get(numerical_details, "tole", 1e-6)
     anderm      = get(numerical_details, "anderm", 5)
 

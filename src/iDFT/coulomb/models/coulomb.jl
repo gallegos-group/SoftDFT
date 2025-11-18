@@ -10,9 +10,8 @@ Inhomogeneous DFT functional for the Coulomb contribution.
 - `weight_fft_K::Array{Float64,N}`: Fourier-space Coulomb kernel.
 - `model::CoulombFreeEnergy`: Precomputed bulk free energy model.
 """
-struct coulFunctional{N} <: AbstractFunctional
+struct CoulombFFT{N} <: AbstractCoulomb
     weight_fft_K :: Array{Float64, N}
-    model        :: CoulombFreeEnergy
 end
 
 """
@@ -28,7 +27,7 @@ Constructs a `coulFunctional` object using the provided molecular system, bulk s
 # Returns
 - A fully initialized `coulFunctional` object.
 """
-function construct_functional(::Type{coulFunctional},
+function construct_coulomb( :: Type{CoulombFFT},
                               molsys::MolecularSystem,
                               bulk::BulkState,
                               geometry::CartesianCoord)
@@ -41,22 +40,67 @@ function construct_functional(::Type{coulFunctional},
     weight_fft_K = zeros(Float64, NP_star)
     coul_func_fft!(weight_fft_K, bin_width, bjerrum_length)
 
-    model = only(filter(e -> isa(e, CoulombFreeEnergy), bulk.fe_model))
-
-    return coulFunctional{ndims(weight_fft_K)}(weight_fft_K, model)
+    return CoulombFFT{ndims(weight_fft_K)}(weight_fft_K)
 end
 
 
 
 
-function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, fe_term :: coulFunctional)
+function eval_coulomb_energy(bulk_system :: IsingLST, geometry :: CoordSystem, fields :: SpatialFields, coulomb :: CoulombFFT)
     @unpack mirrored, offset = geometry
 
-    @unpack weight_fft_K = fe_term
+    @unpack weight_fft_K = coulomb
     @unpack surf_hat, rho_beads_hat, f_hat, mu_ex_hat, plan_backward = fields.fourier
     @unpack valences = bulk_system.molsys.properties.monomers
     PsiC = fields.excess.PsiC[1]
     Psi = fields.excess.Psi
+
+    Rsys_star = CartesianIndices(f_hat)
+
+    @. f_hat = surf_hat
+    for j in axes(rho_beads_hat, ndims(rho_beads_hat))
+        for K_star in Rsys_star
+            f_hat[K_star] += rho_beads_hat[K_star, j] * valences[j]
+        end
+    end
+    
+    f_hat = plan_backward * f_hat
+
+    fe = 0.0
+    for K in CartesianIndices(Psi)
+        K_star = to_star_index(K, offset, mirrored)
+        fe += real(f_hat[K_star]) * (Psi[K] + PsiC)/ 2.0
+    end
+
+    return fe
+end
+
+
+"""
+    solve_coulomb!(dft_system)
+
+Updates `fields.excess.Psi` and `fields.excess.PsiC`.
+"""
+function solve_coulomb(bulk_system, geometry, fields, coulomb::CoulombFFT)
+
+    # Step 1: Solve Poisson
+    Psi = solve_poisson_eq(bulk_system, geometry, fields, coulomb)
+
+    # Step 2: Enforce Charge Neutrality
+    PsiC = compute_neutrality_shift(bulk_system, geometry, fields)
+
+    return Psi, PsiC
+end
+
+
+function solve_poisson_eq(bulk_system, geometry, fields, coulomb :: CoulombFFT)
+    @unpack mirrored, offset = geometry
+
+    @unpack weight_fft_K = coulomb
+    @unpack surf_hat, rho_beads_hat, f_hat, plan_backward = fields.fourier
+    @unpack valences = bulk_system.molsys.properties.monomers
+
+    Psi = zeros(Float64, size(fields.excess.Psi))
 
     Rsys_star = CartesianIndices(f_hat)
 
@@ -66,8 +110,6 @@ function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fi
         for K_star in Rsys_star
             f_hat[K_star] += rho_beads_hat[K_star, j] * valences[j]
         end
-
-        # f_hat[1] += PsiC * valences[j]
     end
 
     @. f_hat *= weight_fft_K
@@ -79,61 +121,5 @@ function eval_fe_functional(bulk_system :: IsingLST, geometry :: CoordSystem, fi
         Psi[K] = real(f_hat[K_star])
     end
     
-    @. f_hat = surf_hat
-    for j in axes(rho_beads_hat, ndims(rho_beads_hat))
-        for K_star in Rsys_star
-            f_hat[K_star] += rho_beads_hat[K_star, j] * valences[j]
-        end
-    end
-    
-    f_hat = plan_backward * f_hat
-
-    @. Psi += PsiC
-
-    fe = 0.0
-    for K in CartesianIndices(Psi)
-        K_star = to_star_index(K, offset, mirrored)
-        fe += real(f_hat[K_star]) * Psi[K]/ 2.0
-    end
-    # for K in CartesianIndices(Psi)
-    #     K_star = to_star_index(K, offset, mirrored)
-    #     fe += real(f_hat[K_star]) * Psi[K] / 2.0
-    # end
-
-    return fe
-end
-
-
-function eval_mu_functional!(bulk_system :: IsingLST, fields :: SpatialFields, fe_term :: coulFunctional)
-
-    @unpack weight_fft_K = fe_term
-    @unpack surf_hat, rho_beads_hat, f_hat, mu_ex_hat, plan_backward = fields.fourier
-    @unpack valences = bulk_system.molsys.properties.monomers
-    PsiC = fields.excess.PsiC[1]
-    Rsys_star = CartesianIndices(f_hat)
-
-    # Calculate excess chemical contribution by weighting point-wise derivative
-    @. f_hat = surf_hat
-    for j in axes(rho_beads_hat, ndims(rho_beads_hat))
-        for K_star in Rsys_star
-            f_hat[K_star] += rho_beads_hat[K_star, j] * valences[j]
-        end
-
-        # f_hat[1] += PsiC * valences[j]
-    end
-
-    @. f_hat *= weight_fft_K
-    
-    for j in axes(mu_ex_hat, ndims(mu_ex_hat))
-        for K_star in Rsys_star
-            mu_ex_hat[K_star, j] += f_hat[K_star] * valences[j]
-        end
-    end
-
-    @unpack mu_ex_K = fields.excess
-    for j in axes(mu_ex_K, ndims(mu_ex_K))
-        for K in CartesianIndices(axes(mu_ex_K)[1:end-1])
-            mu_ex_K[K, j] += PsiC * valences[j]
-        end
-    end
+    return Psi
 end

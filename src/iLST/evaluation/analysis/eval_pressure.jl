@@ -16,7 +16,7 @@ function eval_bulk_pressure(molsys :: MolecularSystem, bulk :: BulkState)
     mu_ex = bulk.mu_ex
     lng   = bulk.lng
 
-    f_ex = 0.0 # excess_free_energy(molsys, bulk)
+    f_ex = excess_free_energy(molsys, bulk)
 
     bulk.Pressure[1] = sum(rho_species) - f_ex +
                               sum(@. @~ rho_beads * mu_ex) -

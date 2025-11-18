@@ -20,11 +20,23 @@ function bulk_chemical_potential!(molsys :: MolecularSystem, bulk :: BulkState)
         chemical_potential!(molsys, bulk, model)
     end
 
+    get_onebody_potential!(molsys, bulk)
+
       # Evaluate excess contribution for each species
-      for (u, config) in enumerate(molsys.configurations)
+    for (u, config) in enumerate(molsys.configurations)
         species_model = config.species_model
         bulk_chemical_potential!(u, molsys, bulk, species_model)
     end  
+end
+
+function get_onebody_potential!(molsys :: MolecularSystem, bulk :: BulkState)
+
+    @unpack valences, delta_muH = molsys.properties.monomers
+    @unpack Psi, mu_ex, lambda = bulk
+
+    for i in eachindex(lambda)
+        lambda[i] = mu_ex[i] + Psi[1] * valences[i] + delta_muH[i]
+    end
 end
 
 function bulk_chemical_potential!(u, molsys :: MolecularSystem, bulk :: BulkState, species_model)

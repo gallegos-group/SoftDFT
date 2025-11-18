@@ -38,6 +38,7 @@ function process_fields(molsys::MolecularSystem, geometry::CoordSystem)
                                     rho_segments_K)
 
     # === Excess Fields ===
+    lambda_K = zeros(Float64, dims_NB)
     mu_ex_K = zeros(Float64, dims_NB)
     lng_K   = zeros(Float64, dims_MB)
     Ext     = zeros(Float64, dims_NB)
@@ -45,7 +46,7 @@ function process_fields(molsys::MolecularSystem, geometry::CoordSystem)
     Psi     = zeros(Float64, NP)
     PsiC    = [0.0]
 
-    excess_fields = ExcessFields(mu_ex_K, lng_K, Ext, trapez, Psi, PsiC)
+    excess_fields = ExcessFields(lambda_K, mu_ex_K, lng_K, Ext, trapez, Psi, PsiC)
 
     # === FFT Cache ===
     fourier = process_fourier(molsys, geometry)

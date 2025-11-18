@@ -59,10 +59,6 @@ register_functional(:mfmt, mfmtFunctional)
 include("../excluded_volume/TPT1mfmt.jl")
 register_functional(:TPT1mfmt, TPT1mfmtFunctional)
 
-# Coulomb mean-field
-include("../coulomb/coulomb.jl")
-register_functional(:coul, coulFunctional)
-
 # Electrostatic correlations (MSA)
 include("../electrostaticcorrelations/msa.jl")
 register_functional(:msa, msaFunctional)

@@ -12,40 +12,18 @@ geometry:
     
     charged_walls:
       dims: [1]
-      charge: [0.0, -0.0]
-
-    # sw_walls:
-    #   dims: [1]
-    #   monomers:
-    #     B:
-    #       energy: [[-3.0, -0.5]]
-    #       lambda: [[1.5, 1.5]]
-
-        # C:
-        #   energy: [[-0.0, 0.0]]
-        #   lambda: [[1.5, 1.5]]
+      charge: [-0.1, -0.1]
     
 species:
-  - sequence: "AAAAAAAAAAAAAAAAAAAAAAAAA"
-    density: 0.0
-    fixed:
-      density: 0.2
-      segment: [1]
-      position: ["left"]
-
-  # - sequence: "CCCCC"
-  #   density: 0.0
-  #   fixed:
-  #     density: 0.01
-  #     segment: [1]
-  #     position: ["right"]
+  - sequence: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    concentration: 0.01
 
   - sequence: "c"
-    density: 0.01
+    concentration: 0.00  # 0.0 for salt-free; otherwise, c_salt
     adjustable: true
 
   - sequence: "a"
-    density: 0.01
+    concentration: 0.00  # 0.0 for salt-free; otherwise, c_salt
     adjustable: true
 
   - sequence: "Y"
@@ -57,11 +35,7 @@ species:
 reactions:
   - species: ["A", "Y", "B"]
     coeffs: [-1, +1, +1]
-    pK: 4.756
-
-  # - species: ["C", "Y", "D"]
-  #   coeffs: [-1, +1, +1]
-  #   pK: 10.0
+    pK: 4.0
 
   - species: ["Y", "Z"]
     coeffs: [+1, +1]
@@ -84,14 +58,6 @@ monomers:
     diameter: 1.0
     valence: -1.0
 
-  C:
-    diameter: 1.0
-    valence: 1.0
-
-  D:
-    diameter: 1.0
-    valence: 0.0
-
   Y:
     diameter: 1.0
     valence: +1.0
@@ -99,14 +65,6 @@ monomers:
   Z:
     diameter: 1.0
     valence: -1.0
-
-# pairs:
-#   square_well:
-#     A, A:
-#       energy: -1.0
-
-#     A, B:
-#       energy: 1.0
     
 system:
   temperature: 298.15
@@ -114,14 +72,11 @@ system:
 
 numerical:
   damping: 0.01
-  mixing_max: 0.01
+  mixing_max: 0.001
   tole: 1e-6
 
 model:
   - ideal
-  # - mfmt
-  # - msa
-  # - sw
   - TPT1mfmt
   - TPT1msa
   - coul

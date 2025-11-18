@@ -21,6 +21,7 @@ Used to accumulate and apply non-ideal interactions and external driving fields 
 """
 
 struct ExcessFields{L, M, N}
+    lambda_K :: Array{Float64, M}   # one-body field
     mu_ex_K :: Array{Float64, M}    # excess chemical potential on grid
     lng_K   :: Array{Float64, N}    # logarithmic bond weight
     Ext     :: Array{Float64, M}    # soft/hard wall or field-like term

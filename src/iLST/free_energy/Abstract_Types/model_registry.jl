@@ -64,10 +64,6 @@ register_model(:mfmt, MFMTFreeEnergy)
 include("../excluded_volume/TPT1mfmt.jl")
 register_model(:TPT1mfmt, TPT1MFMTFreeEnergy)
 
-# Coulomb contribution
-include("../coulomb/coulomb.jl")
-register_model(:coul, CoulombFreeEnergy)
-
 # Electrostatic correlations
 include("../electrostaticcorrelations/msa.jl")
 register_model(:msa, MSAFreeEnergy)

@@ -29,6 +29,7 @@ densities, free energy model components, and thermodynamic output fields.
 struct BulkState{FE, EV}
     rho          :: BulkDensities
     mu_species   :: Vector{Float64}
+    lambda       :: Vector{Float64}
     mu_ex        :: Vector{Float64}
     lng          :: Vector{Float64}
     Xi           :: Vector{Float64}
@@ -39,6 +40,7 @@ struct BulkState{FE, EV}
 
     function BulkState(rho::BulkDensities, fe_model :: FE, evaluation :: EV; Psi = 0.0) where {FE, EV}
         mu_species = zeros(length(rho.species))
+        lambda     = zeros(length(rho.beads))
         mu_ex      = zeros(length(rho.beads))
         lng        = zeros(size(rho.bonds, 2))
         Xi         = zeros(length(rho.species))
@@ -48,7 +50,7 @@ struct BulkState{FE, EV}
         Psi_vec = isa(Psi, Number) ? [Psi] :
                   (length(Psi) == 1 ? Psi : error("Psi must be a scalar or a length-1 vector."))
     
-        return new{FE, EV}(rho, mu_species, mu_ex, lng, Xi, Pressure, Psi_vec, fe_model, evaluation)
+        return new{FE, EV}(rho, mu_species, lambda, mu_ex, lng, Xi, Pressure, Psi_vec, fe_model, evaluation)
     end    
 end
 

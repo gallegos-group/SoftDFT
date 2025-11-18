@@ -35,7 +35,7 @@ function eval_residuals!(molsys::MolecularSystem, bulk::BulkState)
     # === 1. pSpecies-constrained residuals ===
     for (i, _) in enumerate(species)
         if !isnan(input_pSpecies[i])
-            residual = mu_species[i] + input_pSpecies[i] * log(10) - log(unit_conv)
+            residual = mu_species[i] + input_pSpecies[i] * log(10.0) - log(unit_conv)
             push!(residuals, residual)
         end
     end

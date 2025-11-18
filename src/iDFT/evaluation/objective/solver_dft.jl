@@ -4,15 +4,15 @@ include("objective_dft.jl")
 # Solution variables: rho_beads_K, rho_bonds_K, PsiC
 function solver_dft(dft_system :: IsingDFT)
     
-    @unpack bulk_system, geometry, fields, functionals, numerics = dft_system
+    @unpack bulk_system, geometry, fields, functionals, coulomb, numerics = dft_system
 
-    problem_data = (bulk_system, geometry, fields, functionals, )
+    problem_data = (bulk_system, geometry, fields, functionals, coulomb)
 
     objective_function = objective_dft
 
-    solution_variables = (fields.rho_K.segments, fields.rho_K.bonds, fields.excess.PsiC)
+    solution_variables = (fields.excess.mu_ex_K, fields.excess.lng_K, fields.excess.Psi, fields.excess.PsiC)
 
-    constraints = (identity, identity, identity)
+    constraints = (identity, identity, identity, identity)
 
     return solver_function(
                             AndersonMixing(), 

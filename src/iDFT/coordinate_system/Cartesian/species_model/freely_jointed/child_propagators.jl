@@ -9,7 +9,7 @@ function compute_child_propagators(
     config_u = bulk_system.molsys.configurations[u]
 
     # Fields
-    @unpack mu_ex_K, lng_K, Ext, trapez = fields.excess
+    @unpack lambda_K, lng_K, trapez = fields.excess
 
     # Monomers
     @unpack diameters, delta_muH = bulk_system.molsys.properties.monomers
@@ -78,8 +78,8 @@ function compute_child_propagators(
                             if fixed_segments[child]
                                 K_child = CartesianIndex(fixed_coordinates[child])
                                 K_star_child = to_star_index(K_child, offset, mirrored)
-                                calc_f_hat_child!(f_hat, K_child, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, mu_ex_K, Ext, lng_K, gC)
-                                gC[K, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star_child]))*exp(lng_K[K, pair_i, bond]/2.0 - delta_muH[state_j])/renorm/prod(bin_width)/normative
+                                calc_f_hat_child!(f_hat, K_child, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, lambda_K, lng_K, gC)
+                                gC[K, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star_child]))*exp(lng_K[K, pair_i, bond]/2.0)/renorm/prod(bin_width)/normative
                             else    
                                 gC[K, idx_j, idx_c, idx_i, parent] = 0.0
                                 for K1 in Rsys
@@ -87,9 +87,9 @@ function compute_child_propagators(
 
                                     if dist2 <= Dij2
                                         K1_star = to_star_index(K1, offset, mirrored)
-                                        calc_f_hat_child!(f_hat, K1, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, mu_ex_K, Ext, lng_K, gC)
+                                        calc_f_hat_child!(f_hat, K1, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, lambda_K, lng_K, gC)
 
-                                        temp = abs(real(f_hat[K1_star]))*exp(lng_K[K, pair_i, bond]/2.0 - delta_muH[state_j])*prod(bin_width)*trapez[K1, state_j]/renorm
+                                        temp = abs(real(f_hat[K1_star]))*exp(lng_K[K, pair_i, bond]/2.0)*prod(bin_width)*trapez[K1, state_j]/renorm
 
                                         if isapprox(dist2, Dij2; atol=1e-6)
                                             temp /= 2.0
@@ -102,14 +102,14 @@ function compute_child_propagators(
                         elseif fixed_segments[child]
                             K = CartesianIndex(fixed_coordinates[child])
                             K_star = to_star_index(K, offset, mirrored)
-                            calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, mu_ex_K, Ext, lng_K, gC)
+                            calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, lambda_K, lng_K, gC)
                             coord = fixed_coordinates[child]
 
                             for K1 in Rsys
                                 dist2 = compute_distance_squared(K1, coord, bin_width)
 
                                 if dist2 <= Dij2
-                                    gC[K1, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star]))*exp(lng_K[K1, pair_i, bond]/2.0 - delta_muH[state_j])/renorm/normative
+                                    gC[K1, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star]))*exp(lng_K[K1, pair_i, bond]/2.0)/renorm/normative
                                     if isapprox(dist2, Dij2; atol=1e-6)
                                         gC[K1, idx_j, idx_c, idx_i, parent] /= 2.0
                                     end
@@ -118,7 +118,7 @@ function compute_child_propagators(
                         else
                             for K in Rsys
                                 K_star = to_star_index(K, offset, mirrored)
-                                calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, mu_ex_K, Ext, lng_K, gC)
+                                calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, lambda_K, lng_K, gC)
                                 
                                 f_hat[K_star] *= trapez[K, state_j]
                             end
@@ -137,7 +137,7 @@ function compute_child_propagators(
 
                             for K in Rsys
                                 K_star = to_star_index(K, offset, mirrored)
-                                gC[K, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star]))*exp(lng_K[K, pair_i, bond]/2.0 - delta_muH[state_j])/normative
+                                gC[K, idx_j, idx_c, idx_i, parent] = abs(real(f_hat[K_star]))*exp(lng_K[K, pair_i, bond]/2.0)/normative
                             end
                         end
                     end
@@ -184,9 +184,9 @@ end
 end
 
 
-function calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, mu_ex_K, Ext, lng_K, gC)
+function calc_f_hat_child!(f_hat, K, offset, mirrored, children, child, idx_j, state_j, pair_j, bond, lambda_K, lng_K, gC)
     K_star = to_star_index(K, offset, mirrored)
-    f_hat[K_star] = exp(-mu_ex_K[K, state_j] - Ext[K, state_j] + lng_K[K, pair_j, bond] / 2.0)
+    f_hat[K_star] = exp(-lambda_K[K, state_j] + lng_K[K, pair_j, bond] / 2.0)
     for (idx_gc, grandchild) in enumerate(children[child])
         f_hat[K_star] *= sum(@views gC[K, :, idx_gc, idx_j, child])
     end

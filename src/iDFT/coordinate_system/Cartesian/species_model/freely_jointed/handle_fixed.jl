@@ -8,7 +8,7 @@ function handle_fixed(
         species_model :: freely_jointed)
 
     # Fields
-    @unpack mu_ex_K, Ext, trapez = fields.excess
+    @unpack lambda_K, trapez = fields.excess
 
     # Monomers
     @unpack delta_muH = bulk_system.molsys.properties.monomers
@@ -49,7 +49,7 @@ function handle_fixed(
         for K in CartesianIndices(NP)
             for (idx_i, state_i) in enumerate(state_family[parent])
 
-                contr = exp(-mu_ex_K[K, state_i] - Ext[K, state_i] - delta_muH[state_i])*sum(@views gP[K, :, idx_i, parent])
+                contr = exp(-lambda_K[K, state_i])*sum(@views gP[K, :, idx_i, parent])
 
                 if isempty(children[parent])
                     temp = sum(@views gC[K, :, idx_i, 1, parent])

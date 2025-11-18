@@ -1,4 +1,4 @@
-function eval_mu_functionals!(
+function eval_mu_functionals(
     bulk_system :: IsingLST,
     geometry    :: CoordSystem,
     fields      :: SpatialFields,
@@ -7,11 +7,10 @@ function eval_mu_functionals!(
 
     @unpack NP, mirrored, offset = geometry
 
-    @unpack mu_ex_K, lng_K = fields.excess
     @unpack mu_ex_hat, mu_sim_hat, lng_hat, f_hat, plan_backward = fields.fourier
 
-    @. mu_ex_K = 0.0
-    @. lng_K = 0.0
+    mu_ex_K = zeros(Float64, size(fields.excess.mu_ex_K))
+    lng_K = zeros(Float64, size(fields.excess.lng_K))
 
     @. mu_ex_hat = mu_sim_hat  # Zero if no external field simulation
     @. lng_hat = 0.0
@@ -48,6 +47,8 @@ function eval_mu_functionals!(
             end
         end
     end
+
+    return mu_ex_K, lng_K
 end
 
 
@@ -61,11 +62,23 @@ end
 end
 
 # Recursive case: process the first functional, then recurse on the rest
+# Base case: empty tuple → nothing to do
+@inline function eval_mu_functional!(
+    ::IsingLST,
+    ::SpatialFields,
+    ::Tuple{}
+)
+    return nothing
+end
+
+# Recursive case: check each element and skip Coulomb
 @inline function eval_mu_functional!(
     bulk_system::IsingLST,
     fields::SpatialFields,
-    functionals::Tuple
-)
+    functionals::T
+) where {T<:Tuple}
+
     eval_mu_functional!(bulk_system, fields, functionals[1])
-    eval_mu_functional!(bulk_system, fields, Base.tail(functionals))
+
+    return eval_mu_functional!(bulk_system, fields, Base.tail(functionals))
 end

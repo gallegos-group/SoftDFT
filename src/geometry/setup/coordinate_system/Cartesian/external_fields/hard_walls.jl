@@ -26,7 +26,7 @@ end
 function cartesian_features(features::CartesianFeatures, data_external_field, ::Val{:hard_walls})
    @unpack dimensions, periodic, mirrored = features
 
-    description = data_external_field[:charged_walls]
+    description = data_external_field[:hard_walls]
 
     if !haskey(description, "dims")
         error("Missing 'dims' key in external_field[:hard_walls]. Please specify affected directions.")

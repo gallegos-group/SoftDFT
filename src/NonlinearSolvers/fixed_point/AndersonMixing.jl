@@ -74,7 +74,7 @@ function solver_function(
     max_iters   = Int(get(numerical_details, "max_iters", 100000))
     damping     = get(numerical_details, "damping", 0.5)
     mix_max     = get(numerical_details, "mixing_max", 1.0)
-    switch_tole = get(numerical_details, "switch_tole", 1e-2)
+    switch_tole = get(numerical_details, "switch_tole", 1e-3)
     tole        = get(numerical_details, "tole", 1e-6)
     anderm      = Int(get(numerical_details, "anderm", 5))
 
